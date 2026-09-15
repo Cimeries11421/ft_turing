@@ -10,12 +10,12 @@
 	{
 		"odd": 
 		[
-			{ "read" : "0", "action": "RIGHT", "to_state": "even"},
+			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "even"},
 			{ "read" : ".", "write": "y", "action": "RIGHT", "to_state": "HALT"}
 		],
 		"even": 
 		[
-			{ "read" : "0", "action": "RIGHT", "to_state": "odd"},
+			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "odd"},
 			{ "read" : ".", "write": "n", "action": "RIGHT", "to_state": "HALT"}
 		]
 	}
