@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	printf("argv[2] = %s\n", argv[2]);
 	printf("Old tape : %s\n", argv[2]);
 	useTape(machine, argv[2]);
-	free_machine(machine);
+	//free_machine(machine);
 }
 
 Transition *returnActualTransition(TuringMachine *machine, char *initial, char input_c)
@@ -32,6 +32,7 @@ Transition *returnActualTransition(TuringMachine *machine, char *initial, char i
 	int i = 0;
 	int y = 0;
 
+	
 	while (i < machine->nb_states) 	
 	{ 
 		if (strcmp(machine->states[i].name, initial) == 0)
@@ -59,7 +60,7 @@ void useTape(TuringMachine *machine, char *input)
 	{
 		printf("avant ReturnActualTransition\n");
 		transition_tmp = returnActualTransition(machine, machine->initial, input[y]);
-		printf("apres transition_tmp->read : %c\n", transition_tmp->write);
+		printf("apres transition_tmp->write : %c\n", transition_tmp->write);
 		input[y] = transition_tmp->write;
 		if (transition_tmp->action == RIGHT)
 			y++;
