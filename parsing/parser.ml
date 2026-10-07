@@ -1,26 +1,13 @@
 open Core
 
-(*
-AVEC Sys.argv()
-	- Check le bon nombre d'arguments
-	- Recuperer le fichier JSON avec Sys.argv() + check si existe / ouvrir
-	- Parser le fichier pour avoir son alphabet
-	- Recuperer l'input + check si compatible avec l'alphabet du JSON
-	*)
-
-let usage_message = "ft_turing [-h] jsonfile input"
-
-let main json_file input_string = 
-	Printf.printf "Action : test de help" json_file input_string
-
+(* Description of the command *)
 let command =
 	Command.basic
-		~summary:usage_message
-		Command.Param.(anon ("json_file" %: string)),
-		Command.Param.(anon ("input_string" %: string)) in
-			fun () -> main json_file input_string
-
-let () = 
-	Command.run command
-
-	
+		~summary:"ft_turing project"
+		(let%map_open.Command () = 
+			filename = anon ("jsonfile" %:string)
+			and input = anon ("input" %: string)
+		in
+		fun () ->
+			printf "json description of the machine\n")
+			printf "input of the machine\n"

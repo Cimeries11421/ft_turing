@@ -45,7 +45,6 @@ let alice = {
 alice.name (*donne*) Alice
 alice.age (*donne*) 21
 
-
 (*EXO*)
 type machine = {
     name : string;
