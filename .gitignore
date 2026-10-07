@@ -1,0 +1,11 @@
+# OCaml compilation
+*.cmo
+*.cmi
+*.cmx
+*.cmxa
+*.o
+*.a
+
+# Executable
+ft_turing
+
