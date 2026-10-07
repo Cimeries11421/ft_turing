@@ -13,10 +13,9 @@ BYTE_OBJECTS := $(SOURCES:.ml=.cmo)
 
 OPAM := opam
 
-OCAMLC := $(OPAM) exec -- ocamlc
-OCAMLOPT := $(OPAM) exec -- ocamlopt
-OCAMLFIND := $(OPAM) exec -- ocamlfind
-OCAMLDEP := $(OPAM) exec -- ocamldep
+OCAMLC := $(OPAM) exec -- ocamlfind ocamlc
+OCAMLOPT := $(OPAM) exec -- ocamlfind ocamlopt
+OCAMLDEP := $(OPAM) exec -- ocamlfind ocamldep
 
 # Bibliothèques OCaml utilisées par le projet
 OPAM_PACKAGES := \
@@ -26,9 +25,7 @@ OPAM_PACKAGES := \
 	core_unix \
 	ppx_jane
 
-OCAML_PACKAGES := \
-	core,\
-	core_unix
+OCAML_PACKAGES := core,core_unix
 
 # ============================================================
 # Couleurs
@@ -74,14 +71,14 @@ $(NAME): $(SOURCES)
 		-linkpkg \
 		-o $@ \
 		$(OBJECTS)
-		%.cmx: %.ml
+	@echo "$(GREEN)==> Compilation terminée : ./$(NAME)$(RESET)"
+
+%.cmx: %.ml
 	@echo "$(YELLOW)==> Compilation de $<...$(RESET)"
 	$(OCAMLFIND) $(OCAMLOPT) \
 		-package $(OCAML_PACKAGES) \
 		-c \
 		$<
-	@echo "$(GREEN)==> Compilation terminée : ./$(NAME)$(RESET)"
-
 # ============================================================
 # Compilation bytecode avec ocamlc
 # ============================================================
@@ -95,14 +92,14 @@ byte: dependencies
 		-linkpkg \
 		-o $(NAME).byte \
 		$(BYTE_OBJECTS)
-		%.cmo: %.ml
+	@echo "$(GREEN)==> Compilation terminée : ./$(NAME).byte$(RESET)"
+
+%.cmo: %.ml
 	@echo "$(YELLOW)==> Compilation bytecode de $<...$(RESET)"
 	$(OCAMLFIND) $(OCAMLC) \
 		-package $(OCAML_PACKAGES) \
 		-c \
 		$<
-	@echo "$(GREEN)==> Compilation terminée : ./$(NAME).byte$(RESET)"
-
 
 # ============================================================
 # Dépendances OCaml
@@ -112,7 +109,7 @@ byte: dependencies
 
 depend:
 	@echo "$(GRAY)==> Calcul des dépendances...$(RESET)"
-	$(OCAMLDEP) $(SOURCES)
+	$(OCAMLDEP) -native $(SOURCES) > .depend
 
 # ============================================================
 # Nettoyage
@@ -144,3 +141,9 @@ re: clean all
 .PHONY: run
 run: all
 	./$(NAME)
+
+# ============================================================
+# Inclusion des dépendances
+# ============================================================
+
+-include .depend
