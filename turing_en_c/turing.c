@@ -18,11 +18,6 @@ int main(int argc, char **argv)
 	/*if machine == NULL
 		return -1;*/
 	print_machine(machine);
-	write(1, "BONJOUR", 7);
-	printf("argv[0] = %s\n", argv[0]);
-	printf("argv[1] = %s\n", argv[1]);
-	printf("argv[2] = %s\n", argv[2]);
-	printf("Old tape : %s\n", argv[2]);
 	useTape(machine, argv[2]);
 	//free_machine(machine);
 }
