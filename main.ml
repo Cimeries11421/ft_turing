@@ -1,4 +1,4 @@
 open Core
 
 let () =
-  Command_unix.run command
+  Command_unix.run Parser.command

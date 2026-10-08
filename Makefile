@@ -5,13 +5,17 @@
 NAME := ft_turing
 
 SOURCES := \
-	main.ml \
-	parsing/parser.ml
+	parsing/parser.ml \
+	main.ml 
 
 OBJECTS := $(SOURCES:.ml=.cmx)
 BYTE_OBJECTS := $(SOURCES:.ml=.cmo)
 
 OPAM := opam
+
+OCAML_FLAGS := -thread 
+OCAML_INCLUDES := -I parsing 
+OCAML_PPXS := -ppx "ppx-jane -as-ppx"
 
 OCAMLC := $(OPAM) exec -- ocamlfind ocamlc
 OCAMLOPT := $(OPAM) exec -- ocamlfind ocamlopt
@@ -25,7 +29,7 @@ OPAM_PACKAGES := \
 	core_unix \
 	ppx_jane
 
-OCAML_PACKAGES := core,core_unix
+OCAML_PACKAGES := core,core_unix,core_unix.command_unix
 
 # ============================================================
 # Couleurs
@@ -43,6 +47,7 @@ RESET	:= \033[0m
 # ============================================================
 
 .PHONY: all
+
 all: dependencies $(NAME)
 
 # ============================================================
@@ -64,19 +69,25 @@ dependencies:
 # Compilation native avec ocamlopt
 # ============================================================
 
-$(NAME): $(SOURCES)
+$(NAME): $(OBJECTS)
 	@echo "$(YELLOW)==> Compilation native avec ocamlopt...$(RESET)"
-	$(OCAMLFIND) $(OCAMLOPT) \
+	$(OCAMLOPT) \
+		$(OCAML_FLAGS) \
+		$(OCAML_PPXS) \
 		-package $(OCAML_PACKAGES) \
 		-linkpkg \
+		$(OCAML_INCLUDES) \
 		-o $@ \
 		$(OBJECTS)
 	@echo "$(GREEN)==> Compilation terminée : ./$(NAME)$(RESET)"
 
 %.cmx: %.ml
 	@echo "$(YELLOW)==> Compilation de $<...$(RESET)"
-	$(OCAMLFIND) $(OCAMLOPT) \
+	$(OCAMLOPT) \
+		$(OCAML_FLAGS) \
+		$(OCAML_PPXS) \
 		-package $(OCAML_PACKAGES) \
+		$(OCAML_INCLUDES) \
 		-c \
 		$<
 
@@ -86,19 +97,25 @@ $(NAME): $(SOURCES)
 
 .PHONY: byte
 
-byte: dependencies
+byte: dependencies $(BYTE_OBJECTS)
 	@echo "$(YELLOW)==> Compilation bytecode avec ocamlc...$(RESET)"
-	$(OCAMLFIND) $(OCAMLC) \
+	$(OCAMLC) \
+		$(OCAML_FLAGS) \
+		$(OCAML_PPXS) \
 		-package $(OCAML_PACKAGES) \
 		-linkpkg \
+		$(OCAML_INCLUDES) \
 		-o $(NAME).byte \
 		$(BYTE_OBJECTS)
 	@echo "$(GREEN)==> Compilation terminée : ./$(NAME).byte$(RESET)"
 
 %.cmo: %.ml
 	@echo "$(YELLOW)==> Compilation bytecode de $<...$(RESET)"
-	$(OCAMLFIND) $(OCAMLC) \
+	$(OCAMLC) \
+		$(OCAML_FLAGS) \
+		$(OCAML_PPXS) \
 		-package $(OCAML_PACKAGES) \
+		$(OCAML_INCLUDES) \
 		-c \
 		$<
 
@@ -106,25 +123,27 @@ byte: dependencies
 # Dépendances OCaml
 # ============================================================
 
-.PHONY: depend
-
-depend:
+.depend: $(SOURCES)
 	@echo "$(GRAY)==> Calcul des dépendances...$(RESET)"
-	$(OCAMLDEP) -native $(SOURCES) > .depend
+	$(OCAMLDEP) -native $(OCAML_INCLUDES) $(SOURCES) > $@
+
+-include .depend
 
 # ============================================================
 # Nettoyage
 # ============================================================
 
 .PHONY: clean
+
 clean:
 	@echo "$(YELLOW)==> Nettoyage...$(RESET)"
 	rm -f $(NAME)
 	rm -f $(NAME).byte
-	rm -f $(OBJECTS)
+	rm -f .depend
 	find . -name "*.cmi" -delete
 	find . -name "*.cmo" -delete
 	find . -name "*.cmx" -delete
+	find . -name "*.cmxa" -delete
 	find . -name "*.o" -delete
 	@echo "$(GREEN)==> Nettoyage terminé.$(RESET)"
 
@@ -133,6 +152,7 @@ clean:
 # ============================================================
 
 .PHONY: re
+
 re: clean all
 
 # ============================================================
@@ -140,11 +160,6 @@ re: clean all
 # ============================================================
 
 .PHONY: run
+
 run: all
 	./$(NAME)
-
-# ============================================================
-# Inclusion des dépendances
-# ============================================================
-
--include .depend
