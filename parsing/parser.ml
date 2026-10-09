@@ -13,7 +13,30 @@ let print_help () =
 		optional arguments:\n\
 		\ -h, --help		show this help message and exit\n"
 
-(* let read_json fd buf pos len =  *)
+
+let rec parse_lines list = 
+	match list with
+	| [] -> printf "EOF reached"
+	| head :: tail ->
+		let head = String.strip head in
+		if String.is_prefix head ~prefix:"\"name\"" then
+			String.iter head ~f:(fun c -> printf "%c" c)
+		else (
+			printf "Wrong JSON format\n";
+			parse_lines tail
+		)
+		(* else if String.is_prefix head ~prefix:"\"alphabet\"" then
+			
+		else if String.is_prefix head ~prefix:"\"blank\"" then
+
+		else if String.is_prefix head ~prefix:"\"states\"" then
+
+		else if String.is_prefix head ~prefix:"\"initial\"" then
+
+		else if String.is_prefix head ~prefix:"\"finals\"" then
+
+		else if String.is_prefix head ~prefix:"\"transitions\"" then *)
+		
 
 
 (* Description of the command *)
@@ -26,10 +49,10 @@ let command =
 			fun () ->
 				match Sys_unix.file_exists jsonfile with 
 				| `Yes -> 
-					printf "IT EXIST !!";
-					let fd = Core_unix.openfile jsonfile ~mode:[O_RDONLY] ~perm:0o400 in
-					(* let read_json fd ; *)
-					Core_unix.close fd;
-				| `No -> printf "It doesn't exist..."
-				| `Unknown -> printf "Unknown"
+					In_channel.with_file jsonfile ~f:(fun ic ->
+  						let list_lines = In_channel.input_lines ic in
+						parse_lines list_lines
+					)
+				| `No -> printf "This file doesn't exist.\n"
+				| `Unknown -> printf "Unknown file.\n"
 		)
