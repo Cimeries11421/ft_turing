@@ -1,5 +1,10 @@
+executeMachine.cmx : \
+    turing_types.cmx
+machine.cmx : \
+    turing_types.cmx
 main.cmx : \
     turing_types.cmx \
     machine.cmx \
     executeMachine.cmx
 parsing/parser.cmx :
+turing_types.cmx :

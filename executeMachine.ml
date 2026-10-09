@@ -1,26 +1,57 @@
 open Core
-open Turing_types
+open Turing_types (*Types : turingMachine, state, transition*)
 
-type headMachine =
+let config =
 {
+    tape    : string;
     pos     : int;
-    state   : string;
+    initial : string;
+    states  : state list;
 }
 
-let returnActualTransition (machine : turingMachine) (head : headMachine) (tape : string) : state =
-   List.find machine.states ~f:(fun stat -> stat.name = machine.initial)
+let findTransition (config : config) (input : char) : option transition =
+    let actualState = List.find_exn config.states ~f:(fun (actualState : state) -> 
+        String.equal actualState.name config.initial) in
+            List.find actualState.transitions ~f:(fun (actualTransition : transition) -> 
+                Char.equal actualTransition.read input
 
-
-let browseTape (machine : turingMachine) (head : headMachine) (tape : string): unit =
-    let transitionTmp = returnActualTransition machine head tape in
-        print_endline(transitionTmp)
+let rec browseTape (config : config) : unit =
+    let actualTransition = findTransition config config.tape.[config.pos] in
+        if Option.is_none actualTransition then
+            print_endline "HALT"
+        else
+            print_endline "\nActual state : ";
+            print_endline actualTransition.toState;
+            tape.[pos] = actualTransition.write;
+            match actualTransition.action with
+            | RIGHT -> 
+                let newConfig = 
+                    {
+                        tape = config.tape;
+                        pos = config.pos + 1;
+                        inital = actualTransition.toState;
+                        states = config.states;
+                    };
+                browseTape config
+            | LEFT ->
+                let newConfig = 
+                    {
+                        tape = config.tape;
+                        pos = config.pos - 1;
+                        inital = actualTransition.toState;
+                        states = config.states;
+                    };
+                browseTape config
 
 let executeMachine (machine : turingMachine) (tape : string) : unit = 
+    print_endline "All States :";
     List.iter machine.states ~f:(fun x -> print_endline x.name);
-    let head : headMachine = 
+    let configMachine : config = 
         {
+            tape = tape;
             pos = 0;
-            state = machine.initial 
-        } in
-    browseTape machine head tape
-    
+            initial = machine.initial;
+            states = machines.states;
+        }
+    browseTape configMachine
+
