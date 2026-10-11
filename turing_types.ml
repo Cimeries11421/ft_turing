@@ -15,7 +15,7 @@ type state =
     transitions   : transition list;
 }
 
-type TuringMachine =
+type turingMachine =
 {
     name         : string;
     alphabet     : char list;
