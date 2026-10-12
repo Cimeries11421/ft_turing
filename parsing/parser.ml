@@ -1,5 +1,7 @@
 open Core
 open Turing_types
+open Build_machines
+open Extractions
 
 (* Print the help message *)
 let print_help () = 
@@ -14,61 +16,25 @@ let print_help () =
 		optional arguments:\n\
 		\ -h, --help		show this help message and exit\n"
 
-type partial_machine =
-{
-  name : string option;
-  alphabet : char list option;
-  blank : char option;
-  states : state list option;
-  initial : string option;
-  finals : string list option;
-}
-
-let empty_machine =
-{
-  name = None;
-  alphabet = None;
-  blank = None;
-	states = None;
-  initial = None;
-  finals = None;
-}
-
-let build_machine partial =
-	match partial.name,
-				partial.alphabet,
-				partial.blank,
-				partial.states,
-				partial.initial,
-				partial.finals with
-	| Some name, Some alphabet, Some blank, Some states, Some initial, Some finals ->
-		({
-      name = name;
-      alphabet = alphabet;
-      blank = blank;
-      states = states;
-      initial = initial;
-      finals = finals;
-    } : Turing_types.turingMachine)
-	| _ -> failwith "Invalid machine"
-
-let extract_value line =
-  match String.index line ':' with
-  | None -> None
-  | Some pos ->
-		let value = String.strip (String.sub line ~pos:(pos + 1) ~len:(String.length line - pos - 1))
-		in
-		let value = 
-			Option.value (String.chop_suffix value ~suffix:",") ~default:value 
-		in
-		let value = 
-			Option.value (String.chop_suffix value ~suffix:"\"") ~default:value 
-		in
-		let value =
-			Option.value (String.chop_prefix value ~prefix:"\"") ~default:value 
-		in
-		Some value
-
+let print_machine_config (machine : Turing_types.turingMachine) = 
+	printf
+		"*********************************************************************************\n\
+		*										*\n\
+		*				%s					*\n\
+		*										*\n\
+		*********************************************************************************\n\
+		Alphabet : [ %s ] \n\
+		Blank : %c \n\
+		States :  \n\
+		Initial : %s \n\
+		Finals : [ %s ] \n\
+		********************************************************************************\n\
+		"
+		machine.name
+		(String.concat ~sep:", " (List.map machine.alphabet ~f:(fun c -> String.of_char c)))
+		machine.blank
+		machine.initial
+		(String.concat ~sep:", " machine.finals)
 
 let rec parse_lines lines machine = 
 	match lines with
@@ -76,14 +42,14 @@ let rec parse_lines lines machine =
 	| head :: tail ->
 		let head = String.strip head in
 		if String.is_prefix head ~prefix:"\"name\"" then (
-			match extract_value head with
+			match Extractions.extract_value head with
 			| Some value -> 
 					parse_lines tail { machine with name = Some value }
 			| None -> 
 					parse_lines tail machine
 		)
 		else if String.is_prefix head ~prefix:"\"blank\"" then (
-			match extract_value head with
+			match Extractions.extract_value head with
 			| Some value when String.length value = 1 -> 
 					parse_lines tail { machine with blank = Some value.[0] }
 			| Some _ -> 
@@ -92,22 +58,34 @@ let rec parse_lines lines machine =
 					parse_lines tail machine
 		)
 		else if String.is_prefix head ~prefix:"\"initial\"" then (
-			match extract_value head with
+			match Extractions.extract_value head with
 			| Some value -> 
 					parse_lines tail { machine with initial = Some value }
 			| None -> 
 					parse_lines tail machine
 		)
+		else if String.is_prefix head ~prefix:"\"alphabet\"" then (
+			match Extractions.extract_alphabet head with
+			| Some value ->
+					parse_lines tail { machine with alphabet = Some value }
+			| None ->
+					parse_lines tail machine
+		)
+		else if String.is_prefix head ~prefix:"\"finals\"" then (
+			match Extractions.extract_finals head with
+			| Some value ->
+					parse_lines tail { machine with finals = Some value }
+			| None ->
+					parse_lines tail machine
+		)
 		else (
 			parse_lines tail machine
 		)
-		(* else if String.is_prefix head ~prefix:"\"alphabet\"" then
 			
-		else if String.is_prefix head ~prefix:"\"states\"" then
+		(* else if String.is_prefix head ~prefix:"\"states\"" then *)
 
-		else if String.is_prefix head ~prefix:"\"finals\"" then
 
-		else if String.is_prefix head ~prefix:"\"transitions\"" then *)
+		(* else if String.is_prefix head ~prefix:"\"transitions\"" then *)
 
 (* Description of the command *)
 let command =
@@ -122,8 +100,8 @@ let command =
 					In_channel.with_file jsonfile ~f:(fun ic ->
   						let list_lines = In_channel.input_lines ic in
 							let partial = parse_lines list_lines empty_machine in
-							let _machine = build_machine partial in
-							printf "Machine parsed successfully.\n";
+							let machine = Build_machines.build_machine partial in
+							print_machine_config machine
 					)
 				| `No -> printf "This file doesn't exist.\n"
 				| `Unknown -> printf "Unknown file.\n"
