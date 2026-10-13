@@ -2,106 +2,82 @@ open Core
 open Turing_types
 open Yojson.Basic.Util
 open Prints
-(* 
-let fill_item_value item pos = 
-	let value = String.strip (String.sub item ~pos:(pos + 1) ~len:(String.length item - pos - 1))
-	in
-	let value = 
-		Option.value (String.chop_suffix value ~suffix:"\"") ~default:value 
-	in
-	let value =
-		Option.value (String.chop_prefix value ~prefix:"\"") ~default:value 
-	in
-	Some value
 
-let rec parse_transition lines machine =
-	match lines with
-	| [] -> machine 
-	| head :: tail ->
-		let line = String.strip head in 
-		let items = 
-			Option.value (String.chop_prefix line ~prefix:"{") ~default:line
-		in
-		let items =
-			Option.value (String.chop_suffix items ~suffix:"}") ~default:items
-		in
-		let items = String.split items ~on:"," in
-		let list_items = List.filter_map items ~f:(fun item ->
-			let item = String.strip item in
-			match String.index ':' with
-			| None -> None
-			| Some pos -> 
-				let item_value = fill_item_value item pos;
-				let item_type = String.strip (String.sub item ~pos:0 ~len: pos)
-					match item_type with 
-					| None -> None
-					| "read" -> machine with states.transitions.read = Some item_value
-					| "write" -> machine with states.transitions.write = Some item_value
-					| "action" -> machine with states.transitions.action = Some item_value
-					| "to_state" -> machine with states.transitions.to_state = Some item_value
-		)
+let get_string json key =
+	member key json |> to_string
 
-let rec parse_lines lines machine = 
-	match lines with
-	| [] -> machine
-	| head :: tail ->
-		let head = String.strip head in
-		if String.is_prefix head ~prefix:"\"name\"" then (
-			match Extractions.extract_value head with
-			| Some value -> 
-					parse_lines tail { machine with name = Some value }
-			| None -> 
-					parse_lines tail machine
-		)
-		else if String.is_prefix head ~prefix:"\"blank\"" then (
-			match Extractions.extract_value head with
-			| Some value when String.length value = 1 -> 
-					parse_lines tail { machine with blank = Some value.[0] }
-			| Some _ -> 
-					failwith "Invalid blank"
-			| None -> 
-					parse_lines tail machine
-		)
-		else if String.is_prefix head ~prefix:"\"initial\"" then (
-			match Extractions.extract_value head with
-			| Some value -> 
-					parse_lines tail { machine with initial = Some value }
-			| None -> 
-					parse_lines tail machine
-		)
-		else if String.is_prefix head ~prefix:"\"alphabet\"" then (
-			match Extractions.extract_alphabet head with
-			| Some value ->
-					parse_lines tail { machine with alphabet = Some value }
-			| None ->
-					parse_lines tail machine
-		)
-		else if String.is_prefix head ~prefix:"\"finals\"" then (
-			match Extractions.extract_finals head with
-			| Some value ->
-					parse_lines tail { machine with finals = Some value }
-			| None ->
-					parse_lines tail machine
-		)
-		else if String.is_prefix head ~prefix:"\"states\"" then (
-			match Extractions.extract_finals head with
-			| Some value ->
-					parse_lines tail { machine with states.name = Some value }
-			| None ->
-					parse_lines tail machine
-		)
-		else if String.is_prefix head ~prefix:"\"transitions\"" then (
-			parse_transitions tail machine
-		)
-		else (
-			parse_lines tail machine
-		) *)
+let get_char json key =
+	let value = get_string json key in
+	if String.length value <> 1 then
+		failwith ("Invalid character in field: " ^ key)
+	else
+		value.[0]
+
+let get_alphabet json key = 
+	member key json
+	|> to_list
+	|> List.map ~f:to_string
+	|> List.map ~f:(fun value ->
+		if String.length value <> 1 then
+			failwith ("Invalid character in field: " ^ key)
+		else
+			value.[0]
+	)
+
+let get_finals json key =
+	member key json
+	|> to_list
+	|> List.map ~f:to_string
+
+let parse_action (value : string) =
+	if String.equal value "RIGHT" then RIGHT
+	else if String.equal value "LEFT" then LEFT
+	else failwith ("Invalid action: " ^ value)
+
+let parse_transition json : Turing_types.transition =
+{
+	read = get_char json "read";
+	write = get_char json "write";
+	action = parse_action (get_string json "action");
+	toState = get_string json "to_state";
+}
+
+let get_states_names json key =
+	member key json
+	|> to_list
+	|> List.map ~f:to_string
+
+let get_states json key = 
+	List.map (get_states_names json key) ~f:(fun state_name ->
+		let transitions_json = member "transitions" json in
+		let transitions = 
+			match member state_name transitions_json with
+			| `Null -> []
+			| transition_list -> 
+				transition_list
+				|> to_list
+				|> List.map ~f:parse_transition
+			in
+			{Turing_types.name = state_name; Turing_types.transitions = transitions}
+	)
 
 let parse_machine jsonfile = 
 	let json = Yojson.Basic.from_file jsonfile in
 
 	let name = get_string json "name" in
-	let
+	let alphabet = get_alphabet json "alphabet" in
+	let blank = get_char json "blank" in
+	let states = get_states json "states" in
+	let initial = get_string json "initial" in
+	let finals = get_finals json "finals" in
+	{
+		name = name;
+		alphabet = alphabet;
+		blank = blank;
+		states = states;
+		initial = initial;
+		finals = finals;
+	}
 
 (* Description of the command *)
 let command =

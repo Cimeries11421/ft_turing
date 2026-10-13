@@ -5,10 +5,8 @@
 NAME := ft_turing
 
 SOURCES := \
-	prints.ml
 	turing_types.ml \
-	parsing/extractions.ml \
-	parsing/build_machines.ml \
+	parsing/prints.ml \
 	parsing/parser.ml \
 	main.ml 
 

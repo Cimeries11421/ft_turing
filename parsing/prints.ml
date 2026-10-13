@@ -22,14 +22,13 @@ let print_machine_config (machine : Turing_types.turingMachine) =
 		*										*\n\
 		*********************************************************************************\n\
 		Alphabet : [ %s ] \n\
-		Blank : %c \n\
-		States :  \n\
+		States : [ %s ] \n\
 		Initial : %s \n\
 		Finals : [ %s ] \n\
 		********************************************************************************\n\
 		"
 		machine.name
 		(String.concat ~sep:", " (List.map machine.alphabet ~f:(fun c -> String.of_char c)))
-		machine.blank
+		(String.concat ~sep:", " (List.map machine.states ~f:(fun state -> state.name)))
 		machine.initial
 		(String.concat ~sep:", " machine.finals)
