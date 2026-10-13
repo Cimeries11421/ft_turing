@@ -36,7 +36,6 @@ let extendTape (tape : string) (pos : int) (blank : char) : string * int =
 let rec browseTape (config : config) : unit =
     let (tape, pos) = extendTape config.tape config.pos config.blank in
     let config = { config with tape = tape; pos = pos } in
-    print_endline ("Tape --> " ^ config.tape ^ "\n");
     let actualTransition = findTransition config config.tape.[config.pos] in
         if Option.is_none actualTransition then
             if List.mem config.finals config.initial ~equal:String.equal then
@@ -46,8 +45,8 @@ let rec browseTape (config : config) : unit =
                     ^ config.initial ^ ", " ^ Char.to_string config.tape.[config.pos] ^ ")")
         else (
             let actualTransition = Option.value_exn actualTransition in
-            print_endline "\nActual state : ";
-            print_endline actualTransition.toState;
+            print_endline (Display.tapeToString config.tape config.pos ^ " "
+                ^ Display.transitionToString config.initial actualTransition);
             match actualTransition.action with
             | RIGHT ->
                 let newConfig =
