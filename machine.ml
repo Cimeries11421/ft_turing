@@ -58,3 +58,43 @@ let unary_sub =
         };
       ];
   }
+
+
+let even =
+  {
+    name = "even";
+
+    alphabet = [ '0'; '.'; 'y'; 'n' ];
+
+    blank = '.';
+
+    initial = "odd";
+
+    finals = [ "HALT" ];
+
+    states =
+      [
+        {
+          name = "odd";
+          transitions =
+            [
+              { read = '0'; write = '0'; action = RIGHT; toState = "even" };
+              { read = '.'; write = 'y'; action = RIGHT; toState = "HALT" };
+            ];
+        };
+
+        {
+          name = "even";
+          transitions =
+            [
+              { read = '0'; write = '0'; action = RIGHT; toState = "odd" };
+              { read = '.'; write = 'n'; action = RIGHT; toState = "HALT" };
+            ];
+        };
+
+        {
+          name = "HALT";
+          transitions = [];
+        };
+      ];
+  }
