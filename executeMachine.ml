@@ -8,6 +8,7 @@ type config =
     initial : string;
     states  : state list;
     blank   : char;
+    finals  : string list;
 }
 
 let findTransition (config : config) (input : char) : transition option =
@@ -38,7 +39,11 @@ let rec browseTape (config : config) : unit =
     print_endline ("Tape --> " ^ config.tape ^ "\n");
     let actualTransition = findTransition config config.tape.[config.pos] in
         if Option.is_none actualTransition then
-            print_endline "HALT"
+            if List.mem config.finals config.initial ~equal:String.equal then
+                print_endline "HALT"
+            else
+                print_endline ("Machine bloquée : aucune transition pour ("
+                    ^ config.initial ^ ", " ^ Char.to_string config.tape.[config.pos] ^ ")")
         else (
             let actualTransition = Option.value_exn actualTransition in
             print_endline "\nActual state : ";
@@ -52,6 +57,7 @@ let rec browseTape (config : config) : unit =
                         initial = actualTransition.toState;
                         states = config.states;
                         blank = config.blank;
+                        finals = config.finals;
                     } in
                 browseTape newConfig
             | LEFT ->
@@ -62,6 +68,7 @@ let rec browseTape (config : config) : unit =
                         initial = actualTransition.toState;
                         states = config.states;
                         blank = config.blank;
+                        finals = config.finals;
                     } in
                 browseTape newConfig
         )
@@ -76,6 +83,7 @@ let executeMachine (machine : turingMachine) (tape : string) : unit =
             initial = machine.initial;
             states = machine.states;
             blank = machine.blank;
+            finals = machine.finals;
         } in
     browseTape configMachine
 
