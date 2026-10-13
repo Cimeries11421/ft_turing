@@ -7,6 +7,7 @@ type config =
     pos     : int;
     initial : string;
     states  : state list;
+    blank   : char;
 }
 
 let findTransition (config : config) (input : char) : transition option =
@@ -23,8 +24,17 @@ let makeNewTape (tape : string) (c : char) (pos : int) : string =
             else
                 oldChar)
 
+let extendTape (tape : string) (pos : int) (blank : char) : string * int =
+    if pos < 0 then
+        (String.make 1 blank ^ tape, 0)
+    else if pos >= String.length tape then
+        (tape ^ String.make 1 blank, pos)
+    else
+        (tape, pos)
 
 let rec browseTape (config : config) : unit =
+    let (tape, pos) = extendTape config.tape config.pos config.blank in
+    let config = { config with tape = tape; pos = pos } in
     print_endline ("Tape --> " ^ config.tape ^ "\n");
     let actualTransition = findTransition config config.tape.[config.pos] in
         if Option.is_none actualTransition then
@@ -41,6 +51,7 @@ let rec browseTape (config : config) : unit =
                         pos = config.pos + 1;
                         initial = actualTransition.toState;
                         states = config.states;
+                        blank = config.blank;
                     } in
                 browseTape newConfig
             | LEFT ->
@@ -50,6 +61,7 @@ let rec browseTape (config : config) : unit =
                         pos = config.pos - 1;
                         initial = actualTransition.toState;
                         states = config.states;
+                        blank = config.blank;
                     } in
                 browseTape newConfig
         )
@@ -63,6 +75,7 @@ let executeMachine (machine : turingMachine) (tape : string) : unit =
             pos = 0;
             initial = machine.initial;
             states = machine.states;
+            blank = machine.blank;
         } in
     browseTape configMachine
 
