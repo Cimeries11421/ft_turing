@@ -76,7 +76,6 @@ let extract_finals line =
       else Some item
     )
     in Some finals
-    
 
 (* let extract_action value =
   match String.strip value with
@@ -84,4 +83,4 @@ let extract_finals line =
   | "RIGHT" -> Some "RIGHT"
   | _ -> None *)
 
-(* let extraction_transition  *)
+let extract_transition line =

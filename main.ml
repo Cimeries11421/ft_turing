@@ -1,4 +1,5 @@
 open Core
+open Prints
 
 let () =
   let args = Sys.get_argv() in
@@ -6,7 +7,7 @@ let () =
       ~f:(fun arg -> String.equal arg "--help" || String.equal arg "-help" || String.equal arg "-h")
       args
     then (
-      Parser.print_help ();
+      Prints.print_help ();
       exit 0
     )
     else

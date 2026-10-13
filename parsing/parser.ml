@@ -1,40 +1,45 @@
 open Core
 open Turing_types
-open Build_machines
-open Extractions
+open Yojson.Basic.Util
+open Prints
+(* 
+let fill_item_value item pos = 
+	let value = String.strip (String.sub item ~pos:(pos + 1) ~len:(String.length item - pos - 1))
+	in
+	let value = 
+		Option.value (String.chop_suffix value ~suffix:"\"") ~default:value 
+	in
+	let value =
+		Option.value (String.chop_prefix value ~prefix:"\"") ~default:value 
+	in
+	Some value
 
-(* Print the help message *)
-let print_help () = 
-	printf 
-		"usage: ft_turing [-h] jsonfile input\n\
-		\n\
-		positional arguments:\n\
-		\ jsonfile		json description of the machine\n\
-		\n\
-		\ input			input of the machine\n\
-		\n\
-		optional arguments:\n\
-		\ -h, --help		show this help message and exit\n"
-
-let print_machine_config (machine : Turing_types.turingMachine) = 
-	printf
-		"*********************************************************************************\n\
-		*										*\n\
-		*				%s					*\n\
-		*										*\n\
-		*********************************************************************************\n\
-		Alphabet : [ %s ] \n\
-		Blank : %c \n\
-		States :  \n\
-		Initial : %s \n\
-		Finals : [ %s ] \n\
-		********************************************************************************\n\
-		"
-		machine.name
-		(String.concat ~sep:", " (List.map machine.alphabet ~f:(fun c -> String.of_char c)))
-		machine.blank
-		machine.initial
-		(String.concat ~sep:", " machine.finals)
+let rec parse_transition lines machine =
+	match lines with
+	| [] -> machine 
+	| head :: tail ->
+		let line = String.strip head in 
+		let items = 
+			Option.value (String.chop_prefix line ~prefix:"{") ~default:line
+		in
+		let items =
+			Option.value (String.chop_suffix items ~suffix:"}") ~default:items
+		in
+		let items = String.split items ~on:"," in
+		let list_items = List.filter_map items ~f:(fun item ->
+			let item = String.strip item in
+			match String.index ':' with
+			| None -> None
+			| Some pos -> 
+				let item_value = fill_item_value item pos;
+				let item_type = String.strip (String.sub item ~pos:0 ~len: pos)
+					match item_type with 
+					| None -> None
+					| "read" -> machine with states.transitions.read = Some item_value
+					| "write" -> machine with states.transitions.write = Some item_value
+					| "action" -> machine with states.transitions.action = Some item_value
+					| "to_state" -> machine with states.transitions.to_state = Some item_value
+		)
 
 let rec parse_lines lines machine = 
 	match lines with
@@ -78,14 +83,25 @@ let rec parse_lines lines machine =
 			| None ->
 					parse_lines tail machine
 		)
+		else if String.is_prefix head ~prefix:"\"states\"" then (
+			match Extractions.extract_finals head with
+			| Some value ->
+					parse_lines tail { machine with states.name = Some value }
+			| None ->
+					parse_lines tail machine
+		)
+		else if String.is_prefix head ~prefix:"\"transitions\"" then (
+			parse_transitions tail machine
+		)
 		else (
 			parse_lines tail machine
-		)
-			
-		(* else if String.is_prefix head ~prefix:"\"states\"" then *)
+		) *)
 
+let parse_machine jsonfile = 
+	let json = Yojson.Basic.from_file jsonfile in
 
-		(* else if String.is_prefix head ~prefix:"\"transitions\"" then *)
+	let name = get_string json "name" in
+	let
 
 (* Description of the command *)
 let command =
@@ -97,12 +113,8 @@ let command =
 			fun () ->
 				match Sys_unix.file_exists jsonfile with 
 				| `Yes -> 
-					In_channel.with_file jsonfile ~f:(fun ic ->
-  						let list_lines = In_channel.input_lines ic in
-							let partial = parse_lines list_lines empty_machine in
-							let machine = Build_machines.build_machine partial in
-							print_machine_config machine
-					)
+					let machine = parse_machine jsonfile in
+					Prints.print_machine_config machine
 				| `No -> printf "This file doesn't exist.\n"
 				| `Unknown -> printf "Unknown file.\n"
 		)
