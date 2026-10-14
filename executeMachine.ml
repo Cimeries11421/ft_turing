@@ -1,5 +1,6 @@
 open Core
 open Turing_types (*Types : turingMachine, state, transition*)
+open Display
 
 type config =
 {
@@ -7,6 +8,8 @@ type config =
     pos     : int;
     initial : string;
     states  : state list;
+    blank   : char;
+    finals  : string list;
 }
 
 let findTransition (config : config) (input : char) : transition option =
@@ -23,16 +26,35 @@ let makeNewTape (tape : string) (c : char) (pos : int) : string =
             else
                 oldChar)
 
+let extendTape (tape : string) (pos : int) (blank : char) : string * int =
+    if pos < 0 then
+        (String.make 1 blank ^ tape, 0)
+    else if pos >= String.length tape then
+        (tape ^ String.make 1 blank, pos)
+    else
+        (tape, pos)
 
 let rec browseTape (config : config) : unit =
-    print_endline ("Tape --> " ^ config.tape ^ "\n");
+    let (tape, pos) = extendTape config.tape config.pos config.blank in
+    let config = { config with tape = tape; pos = pos } in
     let actualTransition = findTransition config config.tape.[config.pos] in
         if Option.is_none actualTransition then
-            print_endline "HALT"
-        else (
+            if List.mem config.finals config.initial ~equal:String.equal then
+            (
+                print_endline ("\027[38;2;255;105;180mResult --> " ^ config.tape ^ " => " ^
+                Display.tapeToString config.tape config.pos ^ "\027[0m")
+            )
+            else
+            (
+                print_endline ("\027[31mMachine bloquée : aucune transition pour ("
+                ^ config.initial ^ ", "
+                ^ Char.to_string config.tape.[config.pos] ^ ")\027[0m")
+            )
+        else 
+        (
             let actualTransition = Option.value_exn actualTransition in
-            print_endline "\nActual state : ";
-            print_endline actualTransition.toState;
+            print_endline (Display.tapeToString config.tape config.pos ^ " "
+                ^ Display.transitionToString config.initial actualTransition);
             match actualTransition.action with
             | RIGHT ->
                 let newConfig =
@@ -41,6 +63,8 @@ let rec browseTape (config : config) : unit =
                         pos = config.pos + 1;
                         initial = actualTransition.toState;
                         states = config.states;
+                        blank = config.blank;
+                        finals = config.finals;
                     } in
                 browseTape newConfig
             | LEFT ->
@@ -50,6 +74,8 @@ let rec browseTape (config : config) : unit =
                         pos = config.pos - 1;
                         initial = actualTransition.toState;
                         states = config.states;
+                        blank = config.blank;
+                        finals = config.finals;
                     } in
                 browseTape newConfig
         )
@@ -63,6 +89,8 @@ let executeMachine (machine : turingMachine) (tape : string) : unit =
             pos = 0;
             initial = machine.initial;
             states = machine.states;
+            blank = machine.blank;
+            finals = machine.finals;
         } in
     browseTape configMachine
 

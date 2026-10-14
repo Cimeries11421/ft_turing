@@ -8,6 +8,7 @@ SOURCES := \
 	turing_types.ml \
 	parsing/parse_input.ml \
 	parsing/prints.ml \
+	display.ml \
 	executeMachine.ml \
 	parsing/parser.ml \
 	main.ml 
