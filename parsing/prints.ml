@@ -11,7 +11,7 @@ let print_help () =
 		\ input			input of the machine\n\
 		\n\
 		optional arguments:\n\
-		\ -h, --help		show this help message and exit\n"
+		\ -h, -help, --help	show this help message and exit\n"
 
 let print_transition state_name (transition : Turing_types.transition) = 
 	printf "(%s, %c) -> (%s, %c, %s)\n"

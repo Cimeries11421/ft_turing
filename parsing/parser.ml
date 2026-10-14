@@ -80,24 +80,3 @@ let parse_machine jsonfile =
 		initial = initial;
 		finals = finals;
 	}
-
-let command =
-	Command.basic
-		~summary:"ft_turing project"
-		(let%map_open.Command
-			jsonfile = anon ("jsonfile" %: string)
-			and input = anon ("input" %: string) in
-			fun () ->
-				match Sys_unix.file_exists jsonfile with 
-				| `Yes -> 
-					let machine = parse_machine jsonfile in
-					if Parse_input.check_input machine input then (
-						Prints.print_machine_config machine;
-						executeMachine machine input
-					)
-					else (
-						printf "Input doesn't corresponds to the JSON given.\n"
-					)
-				| `No -> printf "This file doesn't exist.\n"
-				| `Unknown -> printf "Unknown file.\n"
-		)
