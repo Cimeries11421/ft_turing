@@ -1,5 +1,6 @@
 open Core
 open Turing_types (*Types : turingMachine, state, transition*)
+open Display
 
 type config =
 {
@@ -39,11 +40,18 @@ let rec browseTape (config : config) : unit =
     let actualTransition = findTransition config config.tape.[config.pos] in
         if Option.is_none actualTransition then
             if List.mem config.finals config.initial ~equal:String.equal then
-                print_endline "HALT"
+            (
+                print_endline ("\027[38;2;255;105;180mResult --> " ^ config.tape ^ " => " ^
+                Display.tapeToString config.tape config.pos ^ "\027[0m")
+            )
             else
-                print_endline ("Machine bloquée : aucune transition pour ("
-                    ^ config.initial ^ ", " ^ Char.to_string config.tape.[config.pos] ^ ")")
-        else (
+            (
+                print_endline ("\027[31mMachine bloquée : aucune transition pour ("
+                ^ config.initial ^ ", "
+                ^ Char.to_string config.tape.[config.pos] ^ ")\027[0m")
+            )
+        else 
+        (
             let actualTransition = Option.value_exn actualTransition in
             print_endline (Display.tapeToString config.tape config.pos ^ " "
                 ^ Display.transitionToString config.initial actualTransition);

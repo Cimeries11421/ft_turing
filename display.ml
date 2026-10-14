@@ -6,7 +6,7 @@ let tapeToString (tape : string) (pos : int) : string =
     let cells = List.mapi (String.to_list tape) ~f:
         (fun (i : int) (c : char) ->
             if i = pos then
-                "<" ^ Char.to_string c ^ ">"
+                "\027[38;2;255;105;180m" ^ Char.to_string c ^ "\027[0m"
             else
                 Char.to_string c) in
     "[" ^ String.concat cells ^ "]"
