@@ -3,6 +3,7 @@ open Prints
 open Turing_types
 open ExecuteMachine
 open Parser
+open Validity_checks
 
 let command =
   Command.basic
@@ -14,7 +15,8 @@ let command =
         match Sys_unix.file_exists jsonfile with 
         | `Yes ->
           let machine = Parser.parse_machine jsonfile in
-          if Parse_input.check_input machine input then (
+          if Validity_checks.check_input machine input then (
+            Validity_checks.validate_machine machine;
             Prints.print_machine_config machine;
             ExecuteMachine.executeMachine machine input
           )

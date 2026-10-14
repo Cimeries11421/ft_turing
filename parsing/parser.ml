@@ -1,9 +1,6 @@
 open Core
 open Turing_types
 open Yojson.Basic.Util
-open Prints
-open Parse_input
-open ExecuteMachine
 
 let get_string json key =
 	member key json |> to_string
