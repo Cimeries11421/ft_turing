@@ -1,0 +1,22 @@
+{
+	"name" : "Blocked",
+	"alphabet": [ "0", "1", " "],
+	"blank" : " ",
+	"states" : [ "scanright", "scanleft", "HALT" ],
+	"initial" : "scanleft",
+	"finals" : [ "HALT" ],
+
+	"transitions" : 
+	{
+		"scanright": 
+		[
+			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "scanright"},
+			{ "read" : "1", "write": "1", "action": "LEFT", "to_state": "scanleft"}
+		],
+		"scanleft": 
+		[
+			{ "read" : "0", "write": "0","action": "LEFT", "to_state": "scanleft"},
+			{ "read" : "1", "write": "1", "action": "RIGHT", "to_state": "scanright"}
+		]
+	}
+}
