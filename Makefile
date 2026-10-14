@@ -6,7 +6,8 @@ NAME := ft_turing
 
 SOURCES := \
 	turing_types.ml \
-	machine.ml \
+	parsing/parse_input.ml \
+	parsing/prints.ml \
 	executeMachine.ml \
 	parsing/parser.ml \
 	main.ml 
@@ -30,9 +31,10 @@ OPAM_PACKAGES := \
 	ocamlfind \
 	core \
 	core_unix \
+	yojson \
 	ppx_jane
 
-OCAML_PACKAGES := core,core_unix,core_unix.command_unix
+OCAML_PACKAGES := core,core_unix,core_unix.command_unix,yojson
 
 # ============================================================
 # Couleurs

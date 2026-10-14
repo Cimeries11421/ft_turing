@@ -6,7 +6,6 @@ type transition =
     write      : char;
     action     : action_type;
     toState    : string;
-
 }
 
 type state = 
