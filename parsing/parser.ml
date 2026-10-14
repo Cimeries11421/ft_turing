@@ -60,6 +60,22 @@ let get_states json key =
 			{Turing_types.name = state_name; Turing_types.transitions = transitions}
 	)
 
+let check_transition_state_names json =
+  let state_names =
+    member "states" json
+    |> to_list
+    |> List.map ~f:to_string
+  in
+  let transition_names =
+    member "transitions" json
+    |> to_assoc
+    |> List.map ~f:fst
+  in
+  List.iter transition_names ~f:(fun name ->
+    if not (List.mem state_names name ~equal:String.equal) then
+      failwith ("Transition unknown: " ^ name)
+  )
+
 let parse_machine jsonfile = 
 	let json = Yojson.Basic.from_file jsonfile in
 
@@ -69,11 +85,13 @@ let parse_machine jsonfile =
 	let states = get_states json "states" in
 	let initial = get_string json "initial" in
 	let finals = get_finals json "finals" in
-	{
+	let machine = {
 		name = name;
 		alphabet = alphabet;
 		blank = blank;
 		states = states;
 		initial = initial;
 		finals = finals;
-	}
+	} in
+	check_transition_state_names json;
+	machine;

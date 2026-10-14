@@ -16,7 +16,7 @@ let command =
         | `Yes ->
           let machine = Parser.parse_machine jsonfile in
           if Validity_checks.check_input machine input then (
-            Validity_checks.validate_machine machine;
+            Validity_checks.validate_machine machine jsonfile;
             Prints.print_machine_config machine;
             ExecuteMachine.executeMachine machine input
           )

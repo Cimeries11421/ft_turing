@@ -1,5 +1,6 @@
 open Core
 open Turing_types
+open Yojson.Basic.Util
 
 let check_input (machine : Turing_types.turingMachine) input : bool = 
   String.to_list input 
@@ -47,7 +48,7 @@ let validate_transitions (machine : Turing_types.turingMachine) =
     )
   )
 
-let validate_machine (machine : Turing_types.turingMachine) =
+let validate_machine (machine : Turing_types.turingMachine) json =
   check_blank machine;
   check_initial machine;
-  validate_transitions machine
+  validate_transitions machine;
