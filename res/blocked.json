@@ -1,22 +1,22 @@
 {
-	"name" : "Blocked",
-	"alphabet": [ "0", "1", " "],
-	"blank" : " ",
-	"states" : [ "scanright", "scanleft", "HALT" ],
-	"initial" : "scanleft",
+	"name" : "even",
+	"alphabet": [ "0", ".", "y", "n" ],
+	"blank" : ".",
+	"states" : [ "odd","even", "HALT" ],
+	"initial" : "odd",
 	"finals" : [ "HALT" ],
 
 	"transitions" : 
 	{
-		"scanright": 
+		"odd": 
 		[
-			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "scanright"},
-			{ "read" : "1", "write": "1", "action": "LEFT", "to_state": "scanleft"}
+			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "even"},
+			{ "read" : ".", "write": "y", "action": "RIGHT", "to_state": "HALT"}
 		],
-		"scanleft": 
+		"even": 
 		[
-			{ "read" : "0", "write": "0","action": "LEFT", "to_state": "scanleft"},
-			{ "read" : "1", "write": "1", "action": "RIGHT", "to_state": "scanright"}
+			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "odd"},
+			{ "read" : ".", "write": "n", "action": "RIGHT", "to_state": "HALT"}
 		]
 	}
 }
