@@ -1,6 +1,6 @@
 {
 	"name" : "even",
-	"alphabet": [ "0", ".", "y", "n" ],
+	"alphabet": [ "0", ".", "y", "n"],
 	"blank" : ".",
 	"states" : [ "odd","even", "HALT" ],
 	"initial" : "odd",

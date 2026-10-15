@@ -3,7 +3,11 @@ open Turing_types
 open Yojson.Basic.Util
 
 let get_string json key =
-	member key json |> to_string
+	let value = member key json |> to_string in
+	if String.is_empty value then
+		failwith("Empty string in field: " ^ key)
+	else 
+		value
 
 let get_char json key =
 	let value = get_string json key in
@@ -17,6 +21,8 @@ let get_alphabet json key =
 	|> to_list
 	|> List.map ~f:to_string
 	|> List.map ~f:(fun value ->
+		if String.is_empty value then
+			failwith("Empty string in field: " ^ key);
 		if String.length value <> 1 then
 			failwith ("Invalid character in field: " ^ key)
 		else
@@ -45,6 +51,14 @@ let get_states_names json key =
 	member key json
 	|> to_list
 	|> List.map ~f:to_string
+	|> List.map ~f:(fun value ->
+		if String.is_empty value then
+			failwith("Empty string in field: " ^ key);
+		if String.length value = 0 then
+			failwith ("Invalid character" ^ value ^ " in field: " ^ key)
+		else
+			value
+	)
 
 let get_states json key = 
 	List.map (get_states_names json key) ~f:(fun state_name ->
@@ -94,4 +108,4 @@ let parse_machine jsonfile =
 		finals = finals;
 	} in
 	check_transition_state_names json;
-	machine;
+	machine
