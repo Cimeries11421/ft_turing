@@ -9,7 +9,7 @@ let get_char json key =
 	let value = get_string json key in
 	if String.length value <> 1 then
 		failwith ("Invalid character in field: " ^ key)
-	else
+	else 
 		value.[0]
 
 let get_alphabet json key = 

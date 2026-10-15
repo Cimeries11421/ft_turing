@@ -5,7 +5,9 @@ open Yojson.Basic.Util
 let check_input (machine : Turing_types.turingMachine) input : bool = 
   String.to_list input 
     |> List.for_all ~f:(fun c ->
-      List.mem machine.alphabet c ~equal:Char.equal
+      if Char.equal machine.blank c then
+        failwith ("Invalid input with blank symbol: " ^ Char.to_string machine.blank);
+      List.mem machine.alphabet c ~equal:Char.equal;
     )
 
 let check_blank (machine : Turing_types.turingMachine) =
