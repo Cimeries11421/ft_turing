@@ -17,11 +17,6 @@
 		[
 			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "odd"},
 			{ "read" : ".", "write": "n", "action": "RIGHT", "to_state": "HALT"}
-		],
-		"ff": 
-		[
-			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "odd"},
-			{ "read" : ".", "write": "n", "action": "RIGHT", "to_state": "HALT"}
 		]
 	}
 }
