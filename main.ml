@@ -5,6 +5,7 @@ open ExecuteMachine
 open Parser
 open Validity_checks
 
+
 let command =
   Command.basic
     ~summary:"ft_turing project"
