@@ -16,10 +16,14 @@ let state_exists (machine : Turing_types.turingMachine) name =
   )
 
 let check_finals (machine : Turing_types.turingMachine) =
+  if List.is_empty machine.finals then
+    failwith ("Invalid finals: Empty list");
   List.iter machine.finals ~f:(fun final ->
+    if String.equal final "" then
+      failwith ("Invalid finals: Empty string element");
     if not (state_exists machine final) then
       failwith ("Invalid finals not in the state name field: " ^ final)
-  ) 
+  )
 
 let check_blank (machine : Turing_types.turingMachine) =
   if not (List.mem machine.alphabet machine.blank ~equal:Char.equal) then
@@ -56,7 +60,7 @@ let validate_transitions (machine : Turing_types.turingMachine) =
     )
   )
 
-let validate_machine (machine : Turing_types.turingMachine) json =
+let validate_machine (machine : Turing_types.turingMachine) =
   check_blank machine;
   check_initial machine;
   check_finals machine;

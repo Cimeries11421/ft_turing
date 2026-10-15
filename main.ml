@@ -17,7 +17,7 @@ let command =
           | `Yes ->
             let machine = Parser.parse_machine jsonfile in
             if Validity_checks.check_input machine input then (
-              Validity_checks.validate_machine machine jsonfile;
+              Validity_checks.validate_machine machine;
               Prints.print_machine_config machine;
               ExecuteMachine.executeMachine machine input
             )
@@ -28,7 +28,9 @@ let command =
           | `Unknown -> printf "Unknown file.\n"
         with
         | Failure message ->
-          eprintf "Error : %s\n" message
+            eprintf "Error : %s\n" message
+        | Yojson.Json_error message ->
+            eprintf "Invalid JSON format: %s\n" message
     )
 
 let () =
@@ -41,5 +43,5 @@ let () =
       exit 0
     )
     else (
-      Command_unix.run command
+        Command_unix.run command
     )
