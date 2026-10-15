@@ -1,11 +1,25 @@
 open Core
 open Turing_types
+open Yojson.Basic.Util
 
 let check_input (machine : Turing_types.turingMachine) input : bool = 
   String.to_list input 
     |> List.for_all ~f:(fun c ->
-      List.mem machine.alphabet c ~equal:Char.equal
+      if Char.equal machine.blank c then
+        failwith ("Invalid input with blank symbol: " ^ Char.to_string machine.blank);
+      List.mem machine.alphabet c ~equal:Char.equal;
     )
+
+let state_exists (machine : Turing_types.turingMachine) name =
+  List.exists machine.states ~f:(fun state ->
+    String.equal state.name name
+  )
+
+let check_finals (machine : Turing_types.turingMachine) =
+  List.iter machine.finals ~f:(fun final ->
+    if not (state_exists machine final) then
+      failwith ("Invalid finals not in the state name field: " ^ final)
+  ) 
 
 let check_blank (machine : Turing_types.turingMachine) =
   if not (List.mem machine.alphabet machine.blank ~equal:Char.equal) then
@@ -16,11 +30,6 @@ let state_read_exists (machine : Turing_types.turingMachine) read =
 
 let state_write_exists (machine : Turing_types.turingMachine) write =
   List.mem machine.alphabet write ~equal:Char.equal
-
-let state_exists (machine : Turing_types.turingMachine) name =
-  List.exists machine.states ~f:(fun state ->
-    String.equal state.name name
-  )
 
 let check_initial (machine : Turing_types.turingMachine) =
     if not (state_exists machine machine.initial) then
@@ -47,7 +56,8 @@ let validate_transitions (machine : Turing_types.turingMachine) =
     )
   )
 
-let validate_machine (machine : Turing_types.turingMachine) =
+let validate_machine (machine : Turing_types.turingMachine) json =
   check_blank machine;
   check_initial machine;
-  validate_transitions machine
+  check_finals machine;
+  validate_transitions machine;
