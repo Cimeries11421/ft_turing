@@ -11,7 +11,11 @@ SOURCES := \
 	display.ml \
 	executeMachine.ml \
 	parsing/parser.ml \
-	main.ml 
+	main.ml
+
+INTERFACES := \
+	display.mli \
+	executeMachine.mli
 
 OBJECTS := $(SOURCES:.ml=.cmx)
 BYTE_OBJECTS := $(SOURCES:.ml=.cmo)
@@ -97,6 +101,16 @@ $(NAME): $(OBJECTS)
 		-c \
 		$<
 
+%.cmi: %.mli
+	@echo "$(YELLOW)==> Compilation de l'interface $<...$(RESET)"
+	$(OCAMLOPT) \
+		$(OCAML_FLAGS) \
+		$(OCAML_PPXS) \
+		-package $(OCAML_PACKAGES) \
+		$(OCAML_INCLUDES) \
+		-c \
+		$<
+
 # ============================================================
 # Compilation bytecode avec ocamlc
 # ============================================================
@@ -129,9 +143,9 @@ byte: dependencies $(BYTE_OBJECTS)
 # Dépendances OCaml
 # ============================================================
 
-.depend: $(SOURCES)
+.depend: $(SOURCES) $(INTERFACES)
 	@echo "$(GRAY)==> Calcul des dépendances...$(RESET)"
-	$(OCAMLDEP) -native $(OCAML_INCLUDES) $(SOURCES) > $@
+	$(OCAMLDEP) -native $(OCAML_INCLUDES) $(INTERFACES) $(SOURCES) > $@
 
 -include .depend
 
