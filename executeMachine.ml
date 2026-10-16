@@ -41,8 +41,7 @@ let rec browseTape (config : config) : unit =
         if Option.is_none actualTransition then
             if List.mem config.finals config.initial ~equal:String.equal then
             (
-                print_endline ("\027[38;2;255;105;180mResult --> " ^ config.tape ^ " => " ^
-                Display.tapeToString config.tape config.pos ^ "\027[0m")
+                print_endline ("\027[38;2;255;105;180mResult ==> [" ^ config.tape ^ "]")
             )
             else
             (
