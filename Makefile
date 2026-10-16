@@ -101,15 +101,11 @@ $(NAME): $(OBJECTS)
 		-c \
 		$<
 
-%.cmi: %.mli
-	@echo "$(YELLOW)==> Compilation de l'interface $<...$(RESET)"
-	$(OCAMLOPT) \
-		$(OCAML_FLAGS) \
-		$(OCAML_PPXS) \
-		-package $(OCAML_PACKAGES) \
-		$(OCAML_INCLUDES) \
-		-c \
-		$<
+display.cmo: display.cmi
+display.cmx: display.cmi
+
+executeMachine.cmo: executeMachine.cmi
+executeMachine.cmx: executeMachine.cmi
 
 # ============================================================
 # Compilation bytecode avec ocamlc
@@ -149,6 +145,11 @@ byte: dependencies $(BYTE_OBJECTS)
 		-c \
 		$<
 
+display.cmo: display.cmi
+display.cmx: display.cmi
+
+executeMachine.cmo: executeMachine.cmi
+executeMachine.cmx: executeMachine.cmi
 
 # ============================================================
 # Dépendances OCaml
@@ -190,7 +191,8 @@ re: clean all
 # Exécution
 # ============================================================
 
-.PHONY: run
+.PHONY: run 
 
 run: all
+	eval "$(opam env)"
 	./$(NAME)
