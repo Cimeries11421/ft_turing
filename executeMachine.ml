@@ -34,20 +34,22 @@ let extendTape (tape : string) (pos : int) (blank : char) : string * int =
     else
         (tape, pos)
 
-let rec browseTape (config : config) : unit =
+let rec browseTape (config : config) : int =
     let (tape, pos) = extendTape config.tape config.pos config.blank in
     let config = { config with tape = tape; pos = pos } in
     let actualTransition = findTransition config config.tape.[config.pos] in
         if Option.is_none actualTransition then
             if List.mem config.finals config.initial ~equal:String.equal then
             (
-                print_endline ("\027[38;2;255;105;180mResult ==> [" ^ config.tape ^ "]")
+                print_endline ("\027[38;2;255;105;180mResult ==> [" ^ config.tape ^ "]");
+                1
             )
             else
             (
                 print_endline ("\027[31mMachine bloquée : aucune transition pour ("
                 ^ config.initial ^ ", "
-                ^ Char.to_string config.tape.[config.pos] ^ ")\027[0m")
+                ^ Char.to_string config.tape.[config.pos] ^ ")\027[0m");
+                1
             )
         else 
         (
@@ -65,7 +67,7 @@ let rec browseTape (config : config) : unit =
                         blank = config.blank;
                         finals = config.finals;
                     } in
-                browseTape newConfig
+                1 + browseTape newConfig
             | LEFT ->
                 let newConfig =
                     {
@@ -76,12 +78,10 @@ let rec browseTape (config : config) : unit =
                         blank = config.blank;
                         finals = config.finals;
                     } in
-                browseTape newConfig
+                1 + browseTape newConfig
         )
 
 let executeMachine (machine : turingMachine) (tape : string) : unit = 
-    print_endline "All States :";
-    List.iter machine.states ~f:(fun (x : state) -> print_endline x.name);
     let configMachine : config =
         {
             tape = tape;
@@ -91,5 +91,7 @@ let executeMachine (machine : turingMachine) (tape : string) : unit =
             blank = machine.blank;
             finals = machine.finals;
         } in
-    browseTape configMachine
+    let count = browseTape configMachine in
+    print_endline ("Time to process: " ^ Int.to_string count)
+        
 

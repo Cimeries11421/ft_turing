@@ -106,9 +106,7 @@ let get_states json key =
           failwith ("Invalid transitions for state: " ^ state_name)
     in
     let finals = get_finals json "finals" in
-    if List.mem finals state_name ~equal:String.equal
-       && not (List.is_empty transitions)
-    then
+    if List.mem finals state_name ~equal:String.equal && not (List.is_empty transitions) then
       failwith ("Final state cannot have transitions: " ^ state_name);
     {
       Turing_types.name = state_name;

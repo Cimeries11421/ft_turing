@@ -1,5 +1,5 @@
 {
-	"name" : "unary_sub",
+	"name" : "palindrome",
 	"alphabet": [ "1", "0", ".", "a", "b", "y", "n" ],
 	"blank" : ".",
 	"states" : [ "start", "end_1", "end_0", "check_1", "check_0", "reset", "pasPalindrome", "Palindrome", "restore", "HALT" ],
