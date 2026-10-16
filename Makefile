@@ -139,6 +139,17 @@ byte: dependencies $(BYTE_OBJECTS)
 		-c \
 		$<
 
+%.cmi: %.mli
+	@echo "$(YELLOW)==> Compilation de l'interface $<...$(RESET)"
+	$(OCAMLC) \
+		$(OCAML_FLAGS) \
+		$(OCAML_PPXS) \
+		-package $(OCAML_PACKAGES) \
+		$(OCAML_INCLUDES) \
+		-c \
+		$<
+
+
 # ============================================================
 # Dépendances OCaml
 # ============================================================
