@@ -1,0 +1,23 @@
+{
+	"name" : "inception",
+	"alphabet": [ "s", "h", "|", "/", ",", "R", "L", "+", "=", "e", "1", "0", "." ],
+	"blank" : ".",
+	"states" : [ "scanright", "eraseone", "HALT" ],
+	"initial" : "scanright",
+	"finals" : [ "HALT" ],
+
+	"transitions" : 
+	{
+		"scanright": 
+		[
+			{ "read" : "1", "write": "1", "action": "RIGHT", "to_state": "scanright"},
+			{ "read" : "+", "write": "1", "action": "RIGHT", "to_state": "scanright"},
+			{ "read" : "=", "write": ".", "action": "LEFT", "to_state": "eraseone" }
+		],
+		"eraseone": 
+		[
+			{ "read" : "1", "write": ".", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "+", "write": ".", "action": "LEFT", "to_state": "HALT"}
+		]
+	}
+}
