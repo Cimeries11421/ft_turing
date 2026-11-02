@@ -27,5 +27,5 @@
 
 	"entree" : "11+1=",
 
-	"input" : "sh/,s11rs,s+1rs,s=.le,e1.lh,e+.lh|11+1="
+	"input" : "sh/s11rs,s+1rs,s=.le,e1.lh,e+.lh|11+1="
 }
