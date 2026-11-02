@@ -120,6 +120,7 @@ byte: dependencies $(BYTE_OBJECTS)
 		$(OCAML_PPXS) \
 		-package $(OCAML_PACKAGES) \
 		-linkpkg \
+		-output-complete-exe \
 		$(OCAML_INCLUDES) \
 		-o $(NAME).byte \
 		$(BYTE_OBJECTS)
