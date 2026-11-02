@@ -39,16 +39,12 @@
 		[
 			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "false"},
 			{ "read" : "1", "write": "1", "action": "RIGHT", "to_state": "false"},
-			{ "read" : "b", "write": "b", "action": "RIGHT", "to_state": "false"},
 			{ "read" : "a", "write": "a", "action": "RIGHT", "to_state": "false"},
 			{ "read" : ".", "write": "n", "action": "LEFT", "to_state": "restore"}
 		],
 		"true": 
 		[
-			{ "read" : "0", "write": "0","action": "RIGHT", "to_state": "true"},
-			{ "read" : "1", "write": "1","action": "RIGHT", "to_state": "true"},
 			{ "read" : "a", "write": "a","action": "RIGHT", "to_state": "true"},
-			{ "read" : "b", "write": "b","action": "RIGHT", "to_state": "true"},
 			{ "read" : ".", "write": "y","action": "LEFT", "to_state": "restore"}
 		],
 		"restore": 
