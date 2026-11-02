@@ -1,0 +1,26 @@
+{
+	"_explication" : "Codage de unary_add pour la machine universelle. Seul le champ input est passe a ft_turing, les autres champs servent a le lire.",
+
+	"etats" : {
+		"s" : "scanright (initial)",
+		"e" : "eraseone",
+		"h" : "HALT (final, code en dur dans la machine universelle)"
+	},
+
+	"format_transition" : "5 caracteres : etat lu nouvel_etat ecrit direction (R = RIGHT, L = LEFT)",
+
+	"transitions" : [
+		"s1s1R",
+		"s+s1R",
+		"s=e.L",
+		"e1h.L",
+		"e+h.L"
+	],
+
+	"separateur" : "|",
+
+	"ruban" : "s11+1=",
+	"ruban_explication" : "la lettre d etat (s) est placee juste devant la case sous la tete : ici la tete est sur le premier 1, calcul de 11+1=",
+
+	"input" : "s1s1Rs+s1Rs=e.Le1h.Le+h.L|s11+1="
+}
