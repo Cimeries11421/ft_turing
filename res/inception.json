@@ -2,8 +2,8 @@
 	"name" : "inception",
 	"alphabet": [ "b", "B", "s", "S", "h", "|", "/", ",", "*", "r", "R", "l", "L", "+", "=", "q", "Q", "e", "E", "1", "0", "_", "a", "A", "P", "p", "." ],
 	"blank" : ".",
-	"states" : [ "first_input_check", "cursor_placement", "to_start", "current_state", "sr_to_input", "e_to_input", "sr_in_input", "e_in_input", "sl_slash_s1", "sr_s1", "sr_check_read_s1", "sr_check_write_s1", "sr_check_action_s1", "sl_slash_s+", "sr_s+", "sr_check_read_s+", "sr_check_write_s+", "sr_check_action_s+", "sl_slash_s=", "sr_s=", "sr_check_read_s=", "sr_check_write_s=", "sr_check_action_s=", "e_slash_e1", "e_e1", "e_check_read_e1", "e_check_write_e1", "e_check_action_e1", "sr_check_to_state", "sl_to_start_s", "change_state_to_s", "check_stop_s", "sl_to_start_e", "change_state_to_e", "check_stop_e", "sl_to_start_h", "change_state_to_h", "check_stop_h", "sr_write_s1", "sr_write_s+", "sr_write_s=", "s1_write_in_input", "s+_write_in_input", "s=_write_in_input", "sl_to_action_s1", "sl_to_action_s+", "sl_to_action_s=", "s=_move_left", "e_write_e1", "e1_write_in_input", "e1_move_left", "sl_to_action_e1", "HALT" ],
-	"initial" : "first_input_check",
+	"states" : [ "first_input_check", "cursor_placement", "to_start", "current_state", "sr_to_input", "e_to_input", "sr_in_input", "e_in_input", "sl_slash_s1", "sr_s1", "sr_check_read_s1", "sr_check_write_s1", "sr_check_action_s1", "sl_slash_s+", "sr_s+", "sr_check_read_s+", "sr_check_write_s+", "sr_check_action_s+", "sl_slash_s=", "sr_s=", "sr_check_read_s=", "sr_check_write_s=", "sr_check_action_s=", "e_slash_e1", "e_e1", "e_check_read_e1", "e_check_write_e1", "e_check_action_e1", "sr_check_to_state", "sl_to_start_s", "change_state_to_s", "check_stop_s", "sl_to_start_e", "change_state_to_e", "check_stop_e", "sl_to_start_h", "change_state_to_h", "check_stop_h", "sr_write_s1", "sr_write_s+", "sr_write_s=", "s1_write_in_input", "s+_write_in_input", "s=_write_in_input", "sl_to_action_s1", "sl_to_action_s+", "sl_to_action_s=", "s=_move_left", "e_write_e1", "e1_write_in_input", "e1_move_left", "sl_to_action_e1", "save_initial", "save_s", "write_save_s", "save_e", "write_save_e", "save_h", "write_save_h", "go_first", "clean_to_input", "clean_input", "back_to_sep", "restore_read", "put_s", "set_s", "put_e", "set_e", "put_h", "set_h", "HALT" ],
+	"initial" : "save_initial",
 	"finals" : [ "HALT" ],
 
 	"transitions" : 
@@ -722,7 +722,7 @@
 		],
 		"check_stop_s":
 		[
-			{ "read" : "s", "write": "s", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "s", "write": "s", "action": "LEFT", "to_state": "clean_to_input"},
 			{ "read" : "e", "write": "e", "action": "LEFT", "to_state": "current_state"},
 			{ "read" : "h", "write": "h", "action": "LEFT", "to_state": "current_state"}
 		],
@@ -759,7 +759,7 @@
 		"check_stop_e":
 		[
 			{ "read" : "s", "write": "s", "action": "LEFT", "to_state": "current_state"},
-			{ "read" : "e", "write": "e", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "e", "write": "e", "action": "LEFT", "to_state": "clean_to_input"},
 			{ "read" : "h", "write": "h", "action": "LEFT", "to_state": "current_state"}
 		],
 		"sl_to_start_h":
@@ -796,6 +796,147 @@
 		[
 			{ "read" : "s", "write": "s", "action": "LEFT", "to_state": "current_state"},
 			{ "read" : "e", "write": "e", "action": "LEFT", "to_state": "current_state"},
+			{ "read" : "h", "write": "h", "action": "LEFT", "to_state": "clean_to_input"}
+		],
+		"save_initial":
+		[
+			{ "read" : "s", "write": "s", "action": "LEFT", "to_state": "save_s"},
+			{ "read" : "e", "write": "e", "action": "LEFT", "to_state": "save_e"},
+			{ "read" : "h", "write": "h", "action": "LEFT", "to_state": "save_h"}
+		],
+		"save_s":
+		[
+			{ "read" : ".", "write": ".", "action": "LEFT", "to_state": "write_save_s"}
+		],
+		"write_save_s":
+		[
+			{ "read" : ".", "write": "s", "action": "RIGHT", "to_state": "go_first"}
+		],
+		"save_e":
+		[
+			{ "read" : ".", "write": ".", "action": "LEFT", "to_state": "write_save_e"}
+		],
+		"write_save_e":
+		[
+			{ "read" : ".", "write": "e", "action": "RIGHT", "to_state": "go_first"}
+		],
+		"save_h":
+		[
+			{ "read" : ".", "write": ".", "action": "LEFT", "to_state": "write_save_h"}
+		],
+		"write_save_h":
+		[
+			{ "read" : ".", "write": "h", "action": "RIGHT", "to_state": "go_first"}
+		],
+		"go_first":
+		[
+			{ "read" : ".", "write": ".", "action": "RIGHT", "to_state": "first_input_check"}
+		],
+		"clean_to_input":
+		[
+			{ "read" : "|", "write": "|", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "b", "write": "b", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "B", "write": "B", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "s", "write": "s", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "S", "write": "S", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "h", "write": "h", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "/", "write": "/", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : ",", "write": ",", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "*", "write": "*", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "r", "write": "r", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "R", "write": "R", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "l", "write": "l", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "L", "write": "L", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "+", "write": "+", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "=", "write": "=", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "q", "write": "q", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "Q", "write": "Q", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "e", "write": "e", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "E", "write": "E", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "1", "write": "1", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "0", "write": "0", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "_", "write": "_", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "a", "write": "a", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "A", "write": "A", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "P", "write": "P", "action": "RIGHT", "to_state": "clean_to_input"},
+			{ "read" : "p", "write": "p", "action": "RIGHT", "to_state": "clean_to_input"}
+		],
+		"clean_input":
+		[
+			{ "read" : "a", "write": "1", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "p", "write": "+", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "q", "write": "=", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "b", "write": "_", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "1", "write": "1", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "+", "write": "+", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "=", "write": "=", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : "_", "write": "_", "action": "RIGHT", "to_state": "clean_input"},
+			{ "read" : ".", "write": ".", "action": "LEFT", "to_state": "back_to_sep"}
+		],
+		"back_to_sep":
+		[
+			{ "read" : ".", "write": ".", "action": "LEFT", "to_state": "restore_read"},
+			{ "read" : "b", "write": "b", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "B", "write": "B", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "s", "write": "s", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "S", "write": "S", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "h", "write": "h", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "|", "write": "|", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "/", "write": "/", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : ",", "write": ",", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "*", "write": "*", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "r", "write": "r", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "R", "write": "R", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "l", "write": "l", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "L", "write": "L", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "+", "write": "+", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "=", "write": "=", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "q", "write": "q", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "Q", "write": "Q", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "e", "write": "e", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "E", "write": "E", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "1", "write": "1", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "0", "write": "0", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "_", "write": "_", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "a", "write": "a", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "A", "write": "A", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "P", "write": "P", "action": "LEFT", "to_state": "back_to_sep"},
+			{ "read" : "p", "write": "p", "action": "LEFT", "to_state": "back_to_sep"}
+		],
+		"restore_read":
+		[
+			{ "read" : "s", "write": ".", "action": "RIGHT", "to_state": "put_s"},
+			{ "read" : "e", "write": ".", "action": "RIGHT", "to_state": "put_e"},
+			{ "read" : "h", "write": ".", "action": "RIGHT", "to_state": "put_h"}
+		],
+		"put_s":
+		[
+			{ "read" : ".", "write": ".", "action": "RIGHT", "to_state": "set_s"}
+		],
+		"set_s":
+		[
+			{ "read" : "s", "write": "s", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "e", "write": "s", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "h", "write": "s", "action": "LEFT", "to_state": "HALT"}
+		],
+		"put_e":
+		[
+			{ "read" : ".", "write": ".", "action": "RIGHT", "to_state": "set_e"}
+		],
+		"set_e":
+		[
+			{ "read" : "s", "write": "e", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "e", "write": "e", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "h", "write": "e", "action": "LEFT", "to_state": "HALT"}
+		],
+		"put_h":
+		[
+			{ "read" : ".", "write": ".", "action": "RIGHT", "to_state": "set_h"}
+		],
+		"set_h":
+		[
+			{ "read" : "s", "write": "h", "action": "LEFT", "to_state": "HALT"},
+			{ "read" : "e", "write": "h", "action": "LEFT", "to_state": "HALT"},
 			{ "read" : "h", "write": "h", "action": "LEFT", "to_state": "HALT"}
 		]
 	}
