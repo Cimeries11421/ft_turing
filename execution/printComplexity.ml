@@ -3,8 +3,36 @@ let rec deux_puissance n =
   else if n = 0 then 1
   else 2 * deux_puissance (n - 1)
 
-let printComplexity (countsAndTapes : (string * int) list) : unit  =
-    print_endline "on arrive dans complexity"
+let rec compareRatios (ratios : float list) : bool =
+    match ratios with
+    | r1 :: r2 :: rest ->
+        if Float.abs (r1 -. r2) <= 0.1 then
+            compareRatios (r2 :: rest)
+        else
+            false
+    | _ -> true
+
+let check_Linear_time_complexity (tapes : (string * int) list) : bool =
+    let sortedTapes : ((string * int ) list) = List.sort tapes ~compare: (fun (tape1 : string, _ : int) (tape2 : string, _ : int)
+    ->
+        Int.compare (String.length tape1) (String.length tape2)
+    )
+    in
+        let ratioList : float list = List.map sortedTapes ~f: (fun (tape : string, count : int)
+        ->
+             count /. float_of_int (String.length tape)
+        )
+        in
+            compareRatios ratioList
+        
+
+
+let printComplexity (tapes : (string * int) list) : unit  =
+    if (check_Linear_time_complexity tapes) = true
+        print_endline "c'est true"
+    else
+        print_endline "false"
+    
 
 let oldprintComplexity (count : int) (tape : string) : unit  =
 
