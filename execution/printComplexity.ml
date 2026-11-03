@@ -3,7 +3,10 @@ let rec deux_puissance n =
   else if n = 0 then 1
   else 2 * deux_puissance (n - 1)
 
-let printComplexity (count : int) (tape : string) : unit  =
+let printComplexity (countsAndTapes : (string * int) list) : unit  =
+    print_endline "on arrive dans complexity"
+
+let oldprintComplexity (count : int) (tape : string) : unit  =
 
     let tape_length = String.length tape in
         if count >= deux_puissance tape_length then

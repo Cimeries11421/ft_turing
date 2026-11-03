@@ -83,15 +83,22 @@ let rec browseTape (config : config) : int =
         )
 
 
-let executeMachine (machine : turingMachine) (tape : string) : unit = 
-    let configMachine : config =
-        {
-            tape = tape;
-            pos = 0;
-            initial = machine.initial;
-            states = machine.states;
-            blank = machine.blank;
-            finals = machine.finals;
-        } in
-    let count = browseTape configMachine in
-        printComplexity count tape
+let executeMachine (machine : turingMachine) (tapes : string list) : unit = 
+    let countsAndTapes : (string * int) list = List.map tapes ~f: 
+        (fun (tape : string) 
+        ->
+            let configMachine : config =
+            {
+                tape = tape;
+                pos = 0;
+                initial = machine.initial;
+                states = machine.states;
+                blank = machine.blank;
+                finals = machine.finals;
+            }
+            let count : int = browseTape configMachine in
+                print_endline ("tape = " ^ tape);
+                print_endline ("count = " ^ string_of_int count);
+                (tape, count)
+        ) in
+            printComplexity countsAndTapes
