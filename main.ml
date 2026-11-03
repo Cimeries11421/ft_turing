@@ -20,17 +20,16 @@ let command =
             let machine = Parser.parse_machine jsonfile in
             if not (List.for_all inputs ~f:(fun input -> Validity_checks.check_input machine input)) then
               printf "Input doesn't corresponds to the JSON given.\n"
-            else if complexity then (
-              Validity_checks.validate_machine machine;
-              printf "TEST complexity sur %d entrees\n" (List.length inputs)
-            )
+            else if not complexity && List.length inputs <> 1 then
+              printf "Only one input expected (use -complexity for several inputs).\n"
+            else if complexity && List.length inputs < 3 then
+              printf "At least 3 inputs expected with -complexity.\n"
+            else if complexity && List.contains_dup (List.map inputs ~f:String.length) ~compare:Int.compare then
+              printf "Inputs must have different lengths with -complexity.\n"
             else (
-              match inputs with
-              | [ input ] ->
-                Validity_checks.validate_machine machine;
-                Prints.print_machine_config machine;
-                ExecuteMachine.executeMachine machine input
-              | _ -> printf "Only one input expected (use -complexity for several inputs).\n"
+              Validity_checks.validate_machine machine;
+              Prints.print_machine_config machine;
+              ExecuteMachine.executeMachine machine inputs
             )
           | `No -> printf "This file doesn't exist.\n"
           | `Unknown -> printf "Unknown file.\n"
