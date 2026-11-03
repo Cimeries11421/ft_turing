@@ -9,8 +9,8 @@ SOURCES := \
 	parsing/validity_checks.ml \
 	parsing/prints.ml \
 	display.ml \
+	printComplexity.ml \
 	executeMachine.ml \
-	printComplexity \
 	parsing/parser.ml \
 	main.ml
 
