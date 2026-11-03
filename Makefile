@@ -10,6 +10,7 @@ SOURCES := \
 	parsing/prints.ml \
 	display.ml \
 	executeMachine.ml \
+	printComplexity \
 	parsing/parser.ml \
 	main.ml
 
