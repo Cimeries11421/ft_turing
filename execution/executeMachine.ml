@@ -42,7 +42,7 @@ let rec browseTape (config : config) : int =
         if Option.is_none actualTransition then
             if List.mem config.finals config.initial ~equal:String.equal then
             (
-                print_endline ("\027[38;2;255;105;180mResult ==> [" ^ config.tape ^ "]");
+                print_endline ("\027[38;2;255;105;180mResult ==> [" ^ config.tape ^ "]\027[0m");
                 1
             )
             else
@@ -100,5 +100,12 @@ let executeMachine (machine : turingMachine) (tapes : string list) : unit =
                 print_endline ("tape = " ^ tape);
                 print_endline ("count = " ^ string_of_int count);
                 (tape, count)
-        ) in
-            printComplexity countsAndTapes
+        ) 
+        in
+            print_endline "**************************************************************************";
+            if List.length countsAndTapes > 1 then
+                printComplexity countsAndTapes
+
+
+
+
