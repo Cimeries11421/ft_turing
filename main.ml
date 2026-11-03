@@ -10,20 +10,27 @@ let command =
   Command.basic
     ~summary:"ft_turing project"
     (let%map_open.Command
-      jsonfile = anon ("jsonfile" %: string)
-      and input = anon ("input" %: string) in
+      complexity = flag "-complexity" no_arg ~doc:" compute the time complexity with several inputs"
+      and jsonfile = anon ("jsonfile" %: string)
+      and inputs = anon (non_empty_sequence_as_list ("input" %: string)) in
       fun () ->
         try 
           match Sys_unix.file_exists jsonfile with 
           | `Yes ->
             let machine = Parser.parse_machine jsonfile in
-            if Validity_checks.check_input machine input then (
+            if not (List.for_all inputs ~f:(fun input -> Validity_checks.check_input machine input)) then
+              printf "Input doesn't corresponds to the JSON given.\n"
+            else if complexity then (
               Validity_checks.validate_machine machine;
-              Prints.print_machine_config machine;
-              ExecuteMachine.executeMachine machine input
+              printf "TEST complexity sur %d entrees\n" (List.length inputs)
             )
             else (
-              printf "Input doesn't corresponds to the JSON given.\n"
+              match inputs with
+              | [ input ] ->
+                Validity_checks.validate_machine machine;
+                Prints.print_machine_config machine;
+                ExecuteMachine.executeMachine machine input
+              | _ -> printf "Only one input expected (use -complexity for several inputs).\n"
             )
           | `No -> printf "This file doesn't exist.\n"
           | `Unknown -> printf "Unknown file.\n"
