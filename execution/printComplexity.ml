@@ -17,9 +17,9 @@ let rec compareRatios (ratios : float list) : bool =
 (* Les complexites qu'on sait tester *)
 type complexity = Linear | Quadratic
 
-(* Pour chaque paire de rubans voisins : combien de pas en plus pour une unite de taille en plus.
+(* Pour chaque paire de rubans voisins : (taille2 - taille1) / (pas2 - pas1).
    Linear : la taille est n ; Quadratic : la taille est n * n *)
-let rec computeStepsPerUnit (curve : complexity) (tapes : (string * int) list) : float list =
+let rec computeUnitsPerStep (curve : complexity) (tapes : (string * int) list) : float list =
     match tapes with
     | (shortTape, shortCount) :: ((longTape, longCount) :: _ as rest) ->
         let shortSize : float = Float.of_int (String.length shortTape) in
@@ -30,17 +30,17 @@ let rec computeStepsPerUnit (curve : complexity) (tapes : (string * int) list) :
             | Linear    -> longSize -. shortSize
             | Quadratic -> (longSize *. longSize) -. (shortSize *. shortSize)
         in
-        let stepsPerUnit : float = extraSteps /. extraSize in
-            stepsPerUnit :: computeStepsPerUnit curve rest
+        let unitsPerStep : float = extraSize /. extraSteps in
+            unitsPerStep :: computeUnitsPerStep curve rest
     | _ -> []
 
 let check_Linear_time_complexity (sortedTapes : (string * int) list) : bool =
-    let stepsPerCellList : float list = computeStepsPerUnit Linear sortedTapes in
-        compareRatios stepsPerCellList
+    let cellsPerStepList : float list = computeUnitsPerStep Linear sortedTapes in
+        compareRatios cellsPerStepList
 
 let check_Quadratic_time_complexity (sortedTapes : (string * int) list) : bool =
-    let stepsPerSquareList : float list = computeStepsPerUnit Quadratic sortedTapes in
-        compareRatios stepsPerSquareList
+    let squaresPerStepList : float list = computeUnitsPerStep Quadratic sortedTapes in
+        compareRatios squaresPerStepList
 
 let printComplexity (tapes : (string * int) list) : unit =
     let sortedTapes : ((string * int) list) = List.sort tapes ~compare: (fun ((tape1 : string), (_ : int)) ((tape2 : string), (_ : int))
