@@ -122,6 +122,8 @@ let check_transition_state_names json =
     | `Null -> failwith "Missing field in JSON: transitions"
     | _ -> failwith "Invalid type for field: transitions"
   in
+  if List.contains_dup transition_names ~compare:String.compare then
+    failwith "Invalid transitions: same state twice";
   List.iter transition_names ~f:(fun name ->
     if String.is_empty name then
       failwith "Empty state name in transitions"
