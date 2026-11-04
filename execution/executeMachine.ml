@@ -97,8 +97,8 @@ let executeMachine (machine : turingMachine) (tapes : string list) : unit =
                 finals = machine.finals;
             } in
             let count : int = browseTape configMachine in
-                print_endline ("tape = " ^ string_of_int (String.length tape));
-                print_endline ("count = " ^ string_of_int count);
+                print_endline ("\027[38;2;170;85;255mtape = " ^ string_of_int (String.length tape) ^ "\027[0m");
+                print_endline ("\027[38;2;170;85;255mcount = " ^ string_of_int count ^ "\027[0m");
                 (tape, count)
         ) 
         in

@@ -3,15 +3,17 @@ open Turing_types
 
 let print_help () = 
 	printf 
-		"usage: ft_turing [-h] jsonfile input\n\
+		"usage: ft_turing [-h] [-c] jsonfile input [input ...]\n\
 		\n\
 		positional arguments:\n\
 		\ jsonfile		json description of the machine\n\
 		\n\
-		\ input			input of the machine\n\
+		\ input			input of the machine (several inputs with -c)\n\
 		\n\
 		optional arguments:\n\
-		\ -h, -help, --help	show this help message and exit\n"
+		\ -h, -help, --help	show this help message and exit\n\
+		\ -c			compute the time complexity\n\
+		\ 			(at least 3 inputs of different lengths)\n"
 
 let print_transition state_name (transition : Turing_types.transition) = 
 	printf "(%s, %c) -> (%s, %c, %s)\n"
