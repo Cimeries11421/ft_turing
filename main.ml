@@ -38,6 +38,10 @@ let command =
             eprintf "Error : %s\n" message
         | Yojson.Json_error message ->
             eprintf "Invalid JSON format: %s\n" message
+        | Yojson.Basic.Util.Type_error (message, _) ->
+            eprintf "Invalid JSON structure: %s\n" message
+        | Sys_error message ->
+            eprintf "Cannot read file: %s\n" message
     )
 
 let () =
