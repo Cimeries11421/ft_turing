@@ -27,7 +27,7 @@ type complexity = Linear | Quadratic | Logarithmic | Linearithmic | Exponential
 
 let rec computeUnitsPerStep (curve : complexity) (tapes : (string * int) list) : float list =
     match tapes with
-    | (shortTape, shortCount) :: ((longTape, longCount) :: rest) ->
+    | (shortTape, shortCount) :: (longTape, longCount) :: rest ->
         let shortSize : float = Float.of_int (String.length shortTape) in
         let longSize : float = Float.of_int (String.length longTape) in
         let extraSteps : float = Float.of_int (longCount - shortCount) in
@@ -40,7 +40,7 @@ let rec computeUnitsPerStep (curve : complexity) (tapes : (string * int) list) :
             | Exponential -> (deux_puissance longSize) -. (deux_puissance shortSize)
         in
         let unitsPerStep : float = extraSize /. extraSteps in
-            unitsPerStep :: computeUnitsPerStep curve rest
+            unitsPerStep :: computeUnitsPerStep curve ((longTape, longCount) :: rest)
     | _ -> []
 
 let check_Constant_time_complexity (sortedTapes : (string * int) list) : bool =
