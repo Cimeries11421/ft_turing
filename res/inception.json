@@ -645,7 +645,8 @@
 			{ "read" : "a", "write": "1", "action": "LEFT", "to_state": "sl_to_action_e1"},
 			{ "read" : "p", "write": "+", "action": "LEFT", "to_state": "sl_to_action_e1"},
 			{ "read" : "q", "write": "=", "action": "LEFT", "to_state": "sl_to_action_e1"},
-			{ "read" : "b", "write": "_", "action": "LEFT", "to_state": "sl_to_action_e1"}
+			{ "read" : "b", "write": "_", "action": "LEFT", "to_state": "sl_to_action_e1"},
+			{ "read" : "|", "write": "|", "action": "LEFT", "to_state": "sl_to_action_e1"}
 		],
 		"sl_to_action_e1":
 		[
