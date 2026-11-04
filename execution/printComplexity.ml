@@ -14,12 +14,9 @@ let rec compareRatios (ratios : float list) : bool =
             false
     | _ -> true
 
-(* Les complexites qu'on sait tester *)
-type complexity = Linear | Quadratic
+type complexity = Constant | Linear | Quadratic | Logarithmic | Linearithmic | Exponential | Factorial
 
-(* Pour chaque paire de rubans voisins : (taille2 - taille1) / (pas2 - pas1).
-   Linear : la taille est n ; Quadratic : la taille est n * n *)
-let rec computeUnitsPerStep (curve : complexity) (tapes : (string * int) list) : float list =
+let rec computeStepsPerUnit (curve : complexity) (tapes : (string * int) list) : float list =
     match tapes with
     | (shortTape, shortCount) :: ((longTape, longCount) :: _ as rest) ->
         let shortSize : float = Float.of_int (String.length shortTape) in
@@ -29,18 +26,38 @@ let rec computeUnitsPerStep (curve : complexity) (tapes : (string * int) list) :
             match curve with
             | Linear    -> longSize -. shortSize
             | Quadratic -> (longSize *. longSize) -. (shortSize *. shortSize)
+            | Logarithmic -> (Float.log longSize) -. (Float.log shortSize)
+            | Linearithmic -> (longSize * (Float.log longSize)) -. (shortSize * Float.log shortSize)
+            | Exponential -> (deux_puissance (Float.log longSize)) -. (deux_puissance (Float.log shortSize))
         in
-        let unitsPerStep : float = extraSize /. extraSteps in
-            unitsPerStep :: computeUnitsPerStep curve rest
+        let stepsPerUnit : float = extraSteps /. extraSize in
+            stepsPerUnit :: computeStepsPerUnit curve rest
     | _ -> []
 
+let check_Constant_time_complexity (sortedTapes : (string * int) list) : bool =
+    let stepsPerSquareList : float list = List.map sortedTapes ~f:(fun (tape : string, count : int) -> count)
+    in
+        compareRatios stepsPerSquareList
+
 let check_Linear_time_complexity (sortedTapes : (string * int) list) : bool =
-    let cellsPerStepList : float list = computeUnitsPerStep Linear sortedTapes in
-        compareRatios cellsPerStepList
+    let stepsPerCellList : float list = computeStepsPerUnit Linear sortedTapes in
+        compareRatios stepsPerCellList
+
+let check_Logarithmic_time_complexity (sortedTapes : (string * int) list) : bool =
+    let stepsPerSquareList : float list = computeStepsPerUnit Logarithmic sortedTapes in
+        compareRatios stepsPerSquareList
 
 let check_Quadratic_time_complexity (sortedTapes : (string * int) list) : bool =
-    let squaresPerStepList : float list = computeUnitsPerStep Quadratic sortedTapes in
-        compareRatios squaresPerStepList
+    let stepsPerSquareList : float list = computeStepsPerUnit Quadratic sortedTapes in
+        compareRatios stepsPerSquareList
+
+let check_Linearithmic_time_complexity (sortedTapes : (string * int) list) : bool =
+    let stepsPerSquareList : float list = computeStepsPerUnit Linearithmic sortedTapes in
+        compareRatios stepsPerSquareList
+
+let check_Exponential_time_complexity (sortedTapes : (string * int) list) : bool =
+    let stepsPerSquareList : float list = computeStepsPerUnit Linearithmic sortedTapes in
+        compareRatios stepsPerSquareList
 
 let printComplexity (tapes : (string * int) list) : unit =
     let sortedTapes : ((string * int) list) = List.sort tapes ~compare: (fun ((tape1 : string), (_ : int)) ((tape2 : string), (_ : int))
@@ -50,10 +67,16 @@ let printComplexity (tapes : (string * int) list) : unit =
     in
         if check_Linear_time_complexity sortedTapes then
             print_endline "Complexity: O(n)"
+        else if check_Logarithmic_time_complexity sortedTapes then
+            print_endline "Complexity: O(log n)"
         else if check_Quadratic_time_complexity sortedTapes then
             print_endline "Complexity: O(n^2)"
+        else if check_Linearithmic_time_complexity sortedTapes then
+            print_endline "Complexity: O(n log n)"
+        else if check_Exponential_time_complexity sortedTapes then
+            print_endline "Complexity: O(2^n)"
         else
-            print_endline "Complexity: greater than O(n^2) or unknown"
+            print_endline "Complexity: greater than O(2^n) or unknown"
 
 
 let oldprintComplexity (count : int) (tape : string) : unit  =
