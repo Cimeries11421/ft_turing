@@ -60,8 +60,22 @@ let validate_transitions (machine : Turing_types.turingMachine) =
     )
   )
 
+let check_duplicate_states (machine : Turing_types.turingMachine) =
+  let names = List.map machine.states ~f:(fun state -> state.name) in
+  if List.contains_dup names ~compare:String.compare then
+    failwith "Invalid states: same state name twice"
+
+let check_duplicate_reads (machine : Turing_types.turingMachine) =
+  List.iter machine.states ~f:(fun state ->
+    let reads = List.map state.transitions ~f:(fun transition -> transition.read) in
+    if List.contains_dup reads ~compare:Char.compare then
+      failwith ("Invalid transitions in '" ^ state.name ^ "': same read symbol twice")
+  )
+
 let validate_machine (machine : Turing_types.turingMachine) =
   check_blank machine;
   check_initial machine;
   check_finals machine;
+  check_duplicate_states machine;
+  check_duplicate_reads machine;
   validate_transitions machine;
