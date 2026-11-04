@@ -8,14 +8,15 @@ SOURCES := \
 	turing_types.ml \
 	parsing/validity_checks.ml \
 	parsing/prints.ml \
-	display.ml \
-	executeMachine.ml \
+	execution/display.ml \
+	execution/printComplexity.ml \
+	execution/executeMachine.ml \
 	parsing/parser.ml \
 	main.ml
 
 INTERFACES := \
-	display.mli \
-	executeMachine.mli
+	execution/display.mli \
+	execution/executeMachine.mli
 
 OBJECTS := $(SOURCES:.ml=.cmx)
 BYTE_OBJECTS := $(SOURCES:.ml=.cmo)
@@ -23,7 +24,7 @@ BYTE_OBJECTS := $(SOURCES:.ml=.cmo)
 OPAM := opam
 
 OCAML_FLAGS := -thread 
-OCAML_INCLUDES := -I parsing 
+OCAML_INCLUDES := -I parsing -I execution
 OCAML_PPXS := -ppx "ppx-jane -as-ppx"
 
 OCAMLC := $(OPAM) exec -- ocamlfind ocamlc

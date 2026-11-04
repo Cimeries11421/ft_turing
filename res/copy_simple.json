@@ -1,0 +1,31 @@
+{
+	"_explication" : "Codage de unary_add pour la machine universelle. Seul le champ input est passe a ft_turing, les autres champs servent a le lire.",
+
+	"etats" : {
+		"s" : "scanright",
+		"e" : "eraseone",
+		"h" : "HALT"
+	},
+
+	"actions" : {
+		"R" : "RIGHT",
+		"L" : "LEFT"
+	},
+
+	"debut" : "sh",
+	"debut_explication" : "initial = s, final = h (meme ordre que initial puis finals dans le json)",
+
+	"format_transition" : "5 caracteres, dans l ordre du json : etat de depart (la cle), read, write, action, to_state",
+
+	"transitions" : [
+		"s11Rs",
+		"s+1Rs",
+		"s=.Le",
+		"e1.Lh",
+		"e+.Lh"
+	],
+
+	"entree" : "11+1=",
+
+	"input" : "sh/s11Rs,s+1Rs,s=.Le,e1.Lh,e+.Lh|11+1="
+}
