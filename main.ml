@@ -10,7 +10,7 @@ let command =
   Command.basic
     ~summary:"ft_turing project"
     (let%map_open.Command
-      complexity = flag "-complexity" no_arg ~doc:" compute the time complexity with several inputs"
+      complexity = flag "-c" no_arg ~doc:" compute the time complexity with several inputs"
       and jsonfile = anon ("jsonfile" %: string)
       and inputs = anon (non_empty_sequence_as_list ("input" %: string)) in
       fun () ->
@@ -21,11 +21,11 @@ let command =
             if not (List.for_all inputs ~f:(fun input -> Validity_checks.check_input machine input)) then
               printf "Input doesn't corresponds to the JSON given.\n"
             else if not complexity && List.length inputs <> 1 then
-              printf "Only one input expected (use -complexity for several inputs).\n"
+              printf "Only one input expected (use -c for several inputs).\n"
             else if complexity && List.length inputs < 3 then
-              printf "At least 3 inputs expected with -complexity.\n"
+              printf "At least 3 inputs expected with -c.\n"
             else if complexity && List.contains_dup (List.map inputs ~f:String.length) ~compare:Int.compare then
-              printf "Inputs must have different lengths with -complexity.\n"
+              printf "Inputs must have different lengths with -c.\n"
             else (
               Validity_checks.validate_machine machine;
               Prints.print_machine_config machine;
