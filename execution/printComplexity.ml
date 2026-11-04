@@ -5,6 +5,15 @@ let rec deux_puissance (n : float) : float =
   else if Float.(n = 0.) then 1.
   else 2. *. deux_puissance (n -. 1.)
 
+let rec compareConstants (count : int list) : bool =
+    match count with
+    | r1 :: r2 :: rest ->
+        if r1 = r2 then
+            compareConstants (r2 :: rest)
+        else
+            false
+    | _ -> true
+
 let rec compareRatios (ratios : float list) : bool =
     match ratios with
     | r1 :: r2 :: rest ->
@@ -18,16 +27,16 @@ type complexity = Linear | Quadratic | Logarithmic | Linearithmic | Exponential
 
 let rec computeUnitsPerStep (curve : complexity) (tapes : (string * int) list) : float list =
     match tapes with
-    | (shortTape, shortCount) :: ((longTape, longCount) :: _ as rest) ->
+    | (shortTape, shortCount) :: ((longTape, longCount) :: rest) ->
         let shortSize : float = Float.of_int (String.length shortTape) in
         let longSize : float = Float.of_int (String.length longTape) in
         let extraSteps : float = Float.of_int (longCount - shortCount) in
         let extraSize : float =
             match curve with
-            | Linear    -> longSize -. shortSize
-            | Quadratic -> (longSize *. longSize) -. (shortSize *. shortSize)
             | Logarithmic -> (Float.log longSize) -. (Float.log shortSize)
+            | Linear    -> longSize -. shortSize
             | Linearithmic -> (longSize *. Float.log longSize) -. (shortSize *. Float.log shortSize)
+            | Quadratic -> (longSize *. longSize) -. (shortSize *. shortSize)
             | Exponential -> (deux_puissance longSize) -. (deux_puissance shortSize)
         in
         let unitsPerStep : float = extraSize /. extraSteps in
@@ -35,9 +44,9 @@ let rec computeUnitsPerStep (curve : complexity) (tapes : (string * int) list) :
     | _ -> []
 
 let check_Constant_time_complexity (sortedTapes : (string * int) list) : bool =
-    let stepsPerSquareList : float list = List.map sortedTapes ~f:(fun ((_ : string), (count : int)) -> Float.of_int count)
+    let stepsPerSquareList : int list = List.map sortedTapes ~f:(fun ((_ : string), (count : int)) -> count)
     in
-        compareRatios stepsPerSquareList
+        compareConstants stepsPerSquareList
 
 let check_Linear_time_complexity (sortedTapes : (string * int) list) : bool =
     let stepsPerCellList : float list = computeUnitsPerStep Linear sortedTapes in
@@ -80,37 +89,3 @@ let printComplexity (tapes : (string * int) list) : unit =
         else
             print_endline "Complexity: greater than O(2^n) or unknown"
 
-
-let oldprintComplexity (count : int) (tape : string) : unit  =
-
-    let tape_length = String.length tape in
-        if Float.(of_int count >= deux_puissance (of_int tape_length)) then
-        (
-            print_endline ("Time to process: " ^ Int.to_string count);
-            print_endline ("Complexity of the process: O(2^n)")
-        )
-        else if count >= (tape_length * tape_length) then 
-        (
-            print_endline ("Time to process: " ^ Int.to_string count);
-            print_endline ("Complexity of the process: O(n^2)")
-        )
-        else if Float.(of_int count >= of_int tape_length *. log (of_int tape_length)) then 
-        (
-            print_endline ("Time to process: " ^ Int.to_string count);
-            print_endline ("Complexity of the process: O(n log n)")
-        )
-        else if count >=  tape_length then 
-        (
-            print_endline ("Time to process: " ^ Int.to_string count);
-            print_endline ("Complexity of the process: O(n)")
-        ) 
-        else if Float.(of_int count >= log (of_int tape_length)) then 
-        (
-            print_endline ("Time to process: " ^ Int.to_string count);
-            print_endline ("Complexity of the process: O(log n)")
-        )
-        else 
-        (
-            print_endline ("Time to process: " ^ Int.to_string count);
-            print_endline ("Complexity of the process: O(1)")
-        )
